@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Arragro.Common.Repository;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using Timesheets.DataLayer.Models;
 
 namespace Timesheets.DataLayer.Interfaces
 {
-    public interface ITimesheetRespotory : IRepository<Timesheet, int>
+    public interface ITimesheetRepository : IRepository<Timesheet, Guid>
     {
     }
 }

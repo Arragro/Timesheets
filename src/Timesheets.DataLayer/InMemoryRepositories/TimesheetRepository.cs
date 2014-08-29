@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Timesheets.DataLayer.Interfaces;
 using Timesheets.DataLayer.Models;
 
-namespace Timesheets.DataLayer.Interfaces
+namespace Timesheets.DataLayer.InMemoryRepositories
 {
-    public interface IProjectRepository : IRepository<Project, Guid>
+    public class TimesheetRepository : InMemoryRepository<Timesheet, Guid>, ITimesheetRepository
     {
     }
 }

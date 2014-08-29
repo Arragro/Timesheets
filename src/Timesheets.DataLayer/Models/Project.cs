@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Arragro.Common.BusinessRules;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -7,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Timesheets.DataLayer.Models
 {
-    public class Project
+    public class Project : Auditable<Guid>
     {
-        public int ProjectId { get; set; }
+        public Guid ProjectId { get; set; }
         [Required]
         [MaxLength(50)]
         public string Name { get; set; }
@@ -19,9 +20,10 @@ namespace Timesheets.DataLayer.Models
         public string PurchaseOrderNumber { get; set; }
         public decimal Budget { get; set; }
         public int WeeklyUserHoursLimit { get; set; }
-        [Required]
+        
         public DateTime StartDate { get; set; }
-        [Required]
         public DateTime EndDate { get; set; }
+
+        public Guid UserId { get; set; }
     }
 }
