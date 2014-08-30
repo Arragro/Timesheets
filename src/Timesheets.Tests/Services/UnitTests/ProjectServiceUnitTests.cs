@@ -13,17 +13,6 @@ using Xunit;
 
 namespace Timesheets.Tests.Services.UnitTests
 {
-    public static class InMemoryUnityContainer
-    {
-        public static IUnityContainer GetInMemoryContainer()
-        {
-            var unityContainer = new UnityContainer();
-            unityContainer.RegisterType<IProjectRepository, ProjectRepository>();
-            unityContainer.RegisterType<ProjectService, ProjectService>();
-            return unityContainer;
-        }
-    }
-
     public class ProjectServiceUnitTests
     {
         [Fact]
@@ -48,7 +37,6 @@ namespace Timesheets.Tests.Services.UnitTests
             Assert.NotNull(errors.SingleOrDefault(x => x.MemberNames.Contains("PurchaseOrderNumber")));
         }
                 
-
         [Fact]
         public void NoUserIdForProject()
         {
