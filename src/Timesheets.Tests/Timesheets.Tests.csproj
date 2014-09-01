@@ -32,6 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Arragro.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Arragro.Common.1.0.0.0\lib\net45\Arragro.Common.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.1.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
     </Reference>
@@ -70,10 +74,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Arragro\src\Arragro\Arragro.Common\Arragro.Common.csproj">
-      <Project>{df7f6387-5d1a-4e62-b136-0c85e4175e1b}</Project>
-      <Name>Arragro.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Timesheets.BusinessLayer\Timesheets.BusinessLayer.csproj">
       <Project>{4632b3e2-361c-4db4-abe1-13c53255b088}</Project>
       <Name>Timesheets.BusinessLayer</Name>
