@@ -1,9 +1,6 @@
 ﻿using Arragro.Common.ServiceBase;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Timesheets.DataLayer.Interfaces;
 using Timesheets.DataLayer.Models;
 
@@ -14,7 +11,10 @@ namespace Timesheets.BusinessLayer.Services
         public const string REQUIREDUSERID = "The project must have a UserId";
         public const string DUPLICATENAMEFORUSER = "There is already a project with the name {0} that you have created, project names must be unique";
 
-        public ProjectService(IProjectRepository repository) : base(repository) { }
+        public ProjectService(IProjectRepository repository)
+            : base(repository)
+        {
+        }
 
         private void HasUserId(Project model)
         {

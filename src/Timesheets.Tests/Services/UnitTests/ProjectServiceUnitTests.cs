@@ -1,13 +1,8 @@
 ﻿using Arragro.Common.BusinessRules;
 using Microsoft.Practices.Unity;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Timesheets.BusinessLayer.Services;
-using Timesheets.DataLayer.InMemoryRepositories;
-using Timesheets.DataLayer.Interfaces;
 using Timesheets.DataLayer.Models;
 using Xunit;
 
@@ -25,8 +20,8 @@ namespace Timesheets.Tests.Services.UnitTests
             Assert.Equal(1, errors.Count);
 
             errors = projectService.ValidateModel(
-                        new Project 
-                        { 
+                        new Project
+                        {
                             Name = new String('X', 51),
                             Code = new String('X', 21),
                             PurchaseOrderNumber = new String('X', 21)
@@ -36,7 +31,7 @@ namespace Timesheets.Tests.Services.UnitTests
             Assert.NotNull(errors.SingleOrDefault(x => x.MemberNames.Contains("Code")));
             Assert.NotNull(errors.SingleOrDefault(x => x.MemberNames.Contains("PurchaseOrderNumber")));
         }
-                
+
         [Fact]
         public void NoUserIdForProject()
         {

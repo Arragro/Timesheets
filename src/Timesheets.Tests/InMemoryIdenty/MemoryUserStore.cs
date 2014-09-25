@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Timesheets.Tests.InMemoryIdenty
@@ -12,7 +11,6 @@ namespace Timesheets.Tests.InMemoryIdenty
                     IUserStore<MemoryUser>, IUserLoginStore<MemoryUser>, IUserRoleStore<MemoryUser>,
                     IUserClaimStore<MemoryUser>, IUserPasswordStore<MemoryUser>, IUserSecurityStampStore<MemoryUser>
     {
-
         private Dictionary<string, MemoryUser> _users = new Dictionary<string, MemoryUser>();
         private Dictionary<UserLoginInfo, MemoryUser> _logins = new Dictionary<UserLoginInfo, MemoryUser>();
 
