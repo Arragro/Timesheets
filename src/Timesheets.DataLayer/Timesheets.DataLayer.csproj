@@ -47,16 +47,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="InMemoryRepositories\ProjectRepository.cs" />
-    <Compile Include="InMemoryRepositories\TimesheetRepository.cs" />
+    <Compile Include="InMemoryRepositories\TimesheetEntryRepository.cs" />
     <Compile Include="Interfaces\IProjectRepository.cs" />
-    <Compile Include="Interfaces\ITimesheetRepository.cs" />
+    <Compile Include="Interfaces\ITimesheetEntryRepository.cs" />
     <Compile Include="Models\Project.cs" />
-    <Compile Include="Models\Timesheet.cs" />
+    <Compile Include="Models\TimesheetEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

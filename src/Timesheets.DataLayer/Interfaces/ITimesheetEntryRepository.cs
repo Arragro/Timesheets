@@ -4,7 +4,7 @@ using Timesheets.DataLayer.Models;
 
 namespace Timesheets.DataLayer.Interfaces
 {
-    public interface ITimesheetRepository : IRepository<Timesheet, Guid>
+    public interface ITimesheetEntryRepository : IRepository<TimesheetEntry, Guid>
     {
     }
 }
