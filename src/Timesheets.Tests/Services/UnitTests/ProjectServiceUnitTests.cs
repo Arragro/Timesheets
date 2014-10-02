@@ -10,11 +10,16 @@ namespace Timesheets.Tests.Services.UnitTests
 {
     public class ProjectServiceUnitTests
     {
-        [Fact]
-        public void ModelAttributesValidateCorrectly()
+        private ProjectService GetProjectService()
         {
             var unityContainer = InMemoryUnityContainer.GetInMemoryContainer();
-            var projectService = unityContainer.Resolve<ProjectService>();
+            return unityContainer.Resolve<ProjectService>();
+        }
+
+        [Fact]
+        public void Project_attributes_validate_correctly()
+        {
+            var projectService = GetProjectService();
 
             var errors = projectService.ValidateModel(new Project());
             Assert.Equal(1, errors.Count);
@@ -33,41 +38,49 @@ namespace Timesheets.Tests.Services.UnitTests
         }
 
         [Fact]
-        public void NoUserIdForProject()
+        public void Project_fails_with_no_UserId()
         {
-            var userId = Guid.NewGuid();
+            var projectService = GetProjectService();
+
             var project1 = new Project { Name = "Test" };
-
-            var unityContainer = InMemoryUnityContainer.GetInMemoryContainer();
-            var projectService = unityContainer.Resolve<ProjectService>();
-
             Assert.Throws<RulesException<Project>>(
                 () =>
                 {
                     try
                     {
-                        projectService.InsertOrUpdate(project1, userId);
+                        projectService.InsertOrUpdate(project1, 1);
                     }
                     catch (RulesException ex)
                     {
-                        Assert.Equal(ex.Errors[0].Message, ProjectService.REQUIREDUSERID);
+                        Assert.Equal(ex.Errors[0].Message, ProjectService.REQUIRED_USERID);
                         throw;
                     }
                 });
         }
 
         [Fact]
-        public void DuplicateProjectNameForUserFails()
+        public void Project_not_valid_when_Name_is_duplicate()
         {
-            var userId = Guid.NewGuid();
-            var project1 = new Project { Name = "Test", UserId = userId };
+            var projectService = GetProjectService();
 
-            var unityContainer = InMemoryUnityContainer.GetInMemoryContainer();
+            var userId = 1;
+            var project1 = new Project
+            {
+                Name = "Test",
+                UserId = userId,
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddDays(1)
+            };
 
-            var projectService = unityContainer.Resolve<ProjectService>();
             projectService.InsertOrUpdate(project1, userId);
 
-            var project2 = new Project { Name = "Test", UserId = userId };
+            var project2 = new Project
+            {
+                Name = "Test",
+                UserId = userId,
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddDays(1)
+            };
             Assert.Throws<RulesException<Project>>(
                 () =>
                 {
@@ -77,8 +90,36 @@ namespace Timesheets.Tests.Services.UnitTests
                     }
                     catch (RulesException ex)
                     {
-                        Assert.Equal(ex.Errors[0].Message, string.Format(ProjectService.DUPLICATENAMEFORUSER, project2.Name));
+                        Assert.Equal(ex.Errors[0].Message, string.Format(ProjectService.DUPLICATE_NAME_FOR_USER, project2.Name));
                         throw;
+                    }
+                });
+        }
+
+        [Fact]
+        public void Project_fails_on_invalid_start_end_dates()
+        {
+            var projectService = GetProjectService();
+            var userId = 1;
+            var project = new Project
+            {
+                Name = "Test",
+                UserId = userId,
+                StartDate = DateTime.Now.AddDays(1),
+                EndDate = DateTime.Now
+            };
+
+            Assert.Throws<RulesException<Project>>(
+                () =>
+                {
+                    try
+                    {
+                        projectService.InsertOrUpdate(project, userId);
+                    }
+                    catch (RulesException ex)
+                    {
+                        Assert.Equal(ex.Errors[0].Message, ProjectService.PROJECT_MUST_BE_AT_LEAST_A_DAY_LONG);
+                        throw ex;
                     }
                 });
         }
