@@ -10,8 +10,13 @@ namespace Timesheets.Tests
         public static IUnityContainer GetInMemoryContainer()
         {
             var unityContainer = new UnityContainer();
+
             unityContainer.RegisterType<IProjectRepository, ProjectRepository>();
             unityContainer.RegisterType<ProjectService, ProjectService>();
+
+            unityContainer.RegisterType<ITimesheetEntryRepository, TimesheetEntryRepository>();
+            unityContainer.RegisterType<TimesheetEntryService, TimesheetEntryService>();
+
             return unityContainer;
         }
     }
