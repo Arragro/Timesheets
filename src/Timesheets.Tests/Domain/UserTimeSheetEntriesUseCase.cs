@@ -45,7 +45,11 @@ namespace Timesheets.Tests.Domain
                 NumberOfHours = 8
             };
 
-            //var timesheetEntry =
+            timesheetEntryService.ValidateAndInsertOrUpdate(
+                timesheetEntry, fooUser.Id);
+            timesheetEntryService.SaveChanges();
+
+            Assert.NotEqual(default(Guid), timesheetEntry.TimesheetEntryId);
         }
     }
 }
