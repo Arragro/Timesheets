@@ -17,20 +17,30 @@ namespace Timesheets.Tests.Services.UnitTests
         }
 
         [Fact]
-        public void Timesheet_attributes_validate_correctly()
+        public void TimesheetEntry_attributes_validate_correctly()
         {
             var timesheetEntryService = GetTimesheetEntryService();
 
-            var errors = timesheetEntryService.ValidateModel(new TimesheetEntry());
-            Assert.Equal(0, errors.Count);
-
-            errors = timesheetEntryService.ValidateModel(
-                        new TimesheetEntry
-                        {
-                            Description = new String('X', 51)
-                        });
-            Assert.Equal(1, errors.Count);
-            Assert.NotNull(errors.SingleOrDefault(x => x.MemberNames.Contains("Description")));
+            Assert.Throws<RulesException<TimesheetEntry>>(
+                () =>
+                {
+                    try
+                    {
+                        timesheetEntryService.ValidateModel(
+                                new TimesheetEntry
+                                {
+                                    Description = new String('X', 51)
+                                });
+                    }
+                    catch (RulesException ex)
+                    {
+                        Assert.Equal(3, ex.Errors.Count);
+                        Assert.True(ex.ContainsErrorForProperty("Description"));
+                        Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == TimesheetEntryService.REQUIRED_USERID));
+                        Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == TimesheetEntryService.DATE_NOT_SET));
+                        throw;
+                    }
+                });
         }
 
         [Fact]
@@ -45,7 +55,7 @@ namespace Timesheets.Tests.Services.UnitTests
                 {
                     try
                     {
-                        timesheetEntryService.EnsureValidModel(timesheetEntry);
+                        timesheetEntryService.ValidateModel(timesheetEntry);
                     }
                     catch (RulesException ex)
                     {
@@ -65,7 +75,7 @@ namespace Timesheets.Tests.Services.UnitTests
                 {
                     try
                     {
-                        timesheetEntryService.EnsureValidModel(timesheetEntry);
+                        timesheetEntryService.ValidateModel(timesheetEntry);
                     }
                     catch (RulesException ex)
                     {
@@ -85,11 +95,12 @@ namespace Timesheets.Tests.Services.UnitTests
                 {
                     try
                     {
-                        timesheetEntryService.EnsureValidModel(timesheetEntry);
+                        timesheetEntryService.ValidateModel(timesheetEntry);
                     }
                     catch (RulesException ex)
                     {
-                        Assert.Equal(ex.Errors[0].Message, TimesheetEntryService.HOURS_MORE_THAN_24);
+                        Assert.Equal(1, ex.Errors.Count);
+                        Assert.True(ex.ContainsErrorForProperty("NumberOfHours"));
                         throw ex;
                     }
                 });
@@ -122,7 +133,7 @@ namespace Timesheets.Tests.Services.UnitTests
                 {
                     try
                     {
-                        timesheetEntryService.EnsureValidModel(timesheetEntry2);
+                        timesheetEntryService.ValidateModel(timesheetEntry2);
                     }
                     catch (RulesException ex)
                     {
@@ -144,7 +155,7 @@ namespace Timesheets.Tests.Services.UnitTests
                 {
                     try
                     {
-                        timesheetEntryService.EnsureValidModel(
+                        timesheetEntryService.ValidateModel(
                             new TimesheetEntry
                             {
                                 UserId = userId,

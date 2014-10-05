@@ -17,10 +17,10 @@ namespace Timesheets.BusinessLayer.Domain
         }
 
         public TimesheetEntry AddTimesheetEntry(
-            IUser<int> user, TimesheetEntry timesheetEntry)
+            TimesheetEntry timesheetEntry, IUser<int> auditUser)
         {
             timesheetEntry =
-                _timesheetEntryService.InsertOrUpdate(timesheetEntry, user.Id);
+                _timesheetEntryService.ValidateAndInsertOrUpdate(timesheetEntry, auditUser.Id);
             _timesheetEntryService.SaveChanges();
             return timesheetEntry;
         }

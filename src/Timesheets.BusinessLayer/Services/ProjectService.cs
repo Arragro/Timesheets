@@ -39,7 +39,7 @@ namespace Timesheets.BusinessLayer.Services
                 RulesException.ErrorForModel(PROJECT_MUST_BE_AT_LEAST_A_DAY_LONG);
         }
 
-        public override void EnsureValidModel(Project model, params object[] relatedModels)
+        protected override void ValidateModelRules(Project model)
         {
             HasUserId(model);
             ProjectUniqueForUser(model);
@@ -50,7 +50,6 @@ namespace Timesheets.BusinessLayer.Services
 
         public override Project InsertOrUpdate(Project model, int userId)
         {
-            EnsureValidModel(model);
             var add = default(Guid) == model.ProjectId;
             AddOrUpdateAudit(model, userId, add);
             return Repository.InsertOrUpdate(model, add);

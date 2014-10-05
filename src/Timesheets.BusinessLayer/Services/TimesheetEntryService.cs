@@ -34,21 +34,22 @@ namespace Timesheets.BusinessLayer.Services
 
         private void NumberOfHoursIsValid(TimesheetEntry model)
         {
-            if (model.NumberOfHours > 24)
-                RulesException.ErrorFor(t => t.NumberOfHours, HOURS_MORE_THAN_24);
+            if (model.NumberOfHours > 0 && model.NumberOfHours <= 24)
+            {
 
-            var timesheetEnties = Repository.All().Where(
-                t => t.UserId == model.UserId
-                  && t.Date.Date == model.Date.Date);
-            var numberOfCurrentHours = timesheetEnties.Sum(t => t.NumberOfHours);
+                var timesheetEnties = Repository.All().Where(
+                    t => t.UserId == model.UserId
+                      && t.Date.Date == model.Date.Date);
+                var numberOfCurrentHours = timesheetEnties.Sum(t => t.NumberOfHours);
 
-            if ((numberOfCurrentHours + model.NumberOfHours) > 24)
-                RulesException.ErrorFor(
-                    t => t.NumberOfHours,
-                    string.Format(HOURS_MORE_THAN_24_WITH_RELATED_TIMESHEETS, 24 - numberOfCurrentHours));
+                if ((numberOfCurrentHours + model.NumberOfHours) > 24)
+                    RulesException.ErrorFor(
+                        t => t.NumberOfHours,
+                        string.Format(HOURS_MORE_THAN_24_WITH_RELATED_TIMESHEETS, 24 - numberOfCurrentHours));
+            }
         }
 
-        public override void EnsureValidModel(TimesheetEntry model, params object[] relatedModels)
+        protected override void ValidateModelRules(TimesheetEntry model)
         {
             HasUserId(model);
             DateIsValid(model);
@@ -59,7 +60,6 @@ namespace Timesheets.BusinessLayer.Services
 
         public override TimesheetEntry InsertOrUpdate(TimesheetEntry model, int userId)
         {
-            EnsureValidModel(model);
             var add = default(Guid) == model.TimesheetEntryId;
             AddOrUpdateAudit(model, userId, add);
             return Repository.InsertOrUpdate(model, add);

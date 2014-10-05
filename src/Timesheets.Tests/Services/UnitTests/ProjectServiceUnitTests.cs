@@ -2,6 +2,8 @@
 using Microsoft.Practices.Unity;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using Timesheets.BusinessLayer.Services;
 using Timesheets.DataLayer.Models;
 using Xunit;
@@ -21,20 +23,46 @@ namespace Timesheets.Tests.Services.UnitTests
         {
             var projectService = GetProjectService();
 
-            var errors = projectService.ValidateModel(new Project());
-            Assert.Equal(1, errors.Count);
+            Assert.Throws<RulesException<Project>>(
+                () =>
+                {
+                    try
+                    {
+                        projectService.ValidateModel(new Project());
+                    }
+                    catch (RulesException ex)
+                    {
+                        Assert.Equal(3, ex.Errors.Count);
+                        throw ex;
+                    }
+                });
 
-            errors = projectService.ValidateModel(
-                        new Project
-                        {
-                            Name = new String('X', 51),
-                            Code = new String('X', 21),
-                            PurchaseOrderNumber = new String('X', 21)
-                        });
-            Assert.Equal(3, errors.Count);
-            Assert.NotNull(errors.SingleOrDefault(x => x.MemberNames.Contains("Name")));
-            Assert.NotNull(errors.SingleOrDefault(x => x.MemberNames.Contains("Code")));
-            Assert.NotNull(errors.SingleOrDefault(x => x.MemberNames.Contains("PurchaseOrderNumber")));
+            projectService.RulesException.Errors.Clear();
+
+            Assert.Throws<RulesException<Project>>(
+                () =>
+                {
+                    try
+                    {
+                        projectService.ValidateModel(
+                           new Project
+                           {
+                               Name = new String('X', 51),
+                               Code = new String('X', 21),
+                               PurchaseOrderNumber = new String('X', 21)
+                           });
+                    }
+                    catch (RulesException ex)
+                    {
+                        Assert.Equal(5, ex.Errors.Count);
+                        Assert.NotNull(ex.ContainsErrorForProperty(".Name"));
+                        Assert.NotNull(ex.ContainsErrorForProperty(".Code"));
+                        Assert.NotNull(ex.ContainsErrorForProperty(".PurchaseOrderNumber"));
+                        Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == ProjectService.REQUIRED_USERID));
+                        Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == ProjectService.PROJECT_MUST_BE_AT_LEAST_A_DAY_LONG));
+                        throw ex;
+                    }
+                });
         }
 
         [Fact]
@@ -48,7 +76,7 @@ namespace Timesheets.Tests.Services.UnitTests
                 {
                     try
                     {
-                        projectService.InsertOrUpdate(project1, 1);
+                        projectService.ValidateModel(project1);
                     }
                     catch (RulesException ex)
                     {
@@ -86,7 +114,7 @@ namespace Timesheets.Tests.Services.UnitTests
                 {
                     try
                     {
-                        projectService.InsertOrUpdate(project2, userId);
+                        projectService.ValidateModel(project2);
                     }
                     catch (RulesException ex)
                     {
@@ -114,7 +142,7 @@ namespace Timesheets.Tests.Services.UnitTests
                 {
                     try
                     {
-                        projectService.InsertOrUpdate(project, userId);
+                        projectService.ValidateModel(project);
                     }
                     catch (RulesException ex)
                     {
