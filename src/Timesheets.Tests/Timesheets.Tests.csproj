@@ -32,9 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Arragro.Common, Version=1.0.0.11, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Arragro.Common, Version=1.0.0.12, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Arragro.Common.1.0.0.11\lib\net45\Arragro.Common.dll</HintPath>
+      <HintPath>..\packages\Arragro.Common.1.0.0.12\lib\net45\Arragro.Common.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.1.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
@@ -64,7 +64,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Domain\UserTimesheetEntriesUseCase.cs" />
+    <Compile Include="Domain\UnitTests\UserTimesheetEntriesUnitTests.cs" />
     <Compile Include="InMemoryIdenty\MemoryUser.cs">
       <SubType>Code</SubType>
     </Compile>

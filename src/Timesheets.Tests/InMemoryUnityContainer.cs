@@ -1,4 +1,7 @@
-﻿using Microsoft.Practices.Unity;
+﻿using Arragro.Common.CacheProvider;
+using Microsoft.Practices.Unity;
+using System;
+using Timesheets.BusinessLayer.Domain;
 using Timesheets.BusinessLayer.Services;
 using Timesheets.DataLayer.InMemoryRepositories;
 using Timesheets.DataLayer.Interfaces;
@@ -11,11 +14,15 @@ namespace Timesheets.Tests
         {
             var unityContainer = new UnityContainer();
 
+            unityContainer.RegisterInstance(new CacheSettings(new TimeSpan(0, 0, 0, 10)));
+
             unityContainer.RegisterType<IProjectRepository, ProjectRepository>();
-            unityContainer.RegisterType<ProjectService, ProjectService>();
+            unityContainer.RegisterType<ProjectService>();
 
             unityContainer.RegisterType<ITimesheetEntryRepository, TimesheetEntryRepository>();
-            unityContainer.RegisterType<TimesheetEntryService, TimesheetEntryService>();
+            unityContainer.RegisterType<TimesheetEntryService>();
+
+            unityContainer.RegisterType<UserTimesheetEntries>();
 
             return unityContainer;
         }

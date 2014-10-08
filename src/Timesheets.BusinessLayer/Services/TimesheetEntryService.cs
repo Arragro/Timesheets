@@ -36,7 +36,6 @@ namespace Timesheets.BusinessLayer.Services
         {
             if (model.NumberOfHours > 0 && model.NumberOfHours <= 24)
             {
-
                 var timesheetEnties = Repository.All().Where(
                     t => t.UserId == model.UserId
                       && t.Date.Date == model.Date.Date);
@@ -63,6 +62,20 @@ namespace Timesheets.BusinessLayer.Services
             var add = default(Guid) == model.TimesheetEntryId;
             AddOrUpdateAudit(model, userId, add);
             return Repository.InsertOrUpdate(model, add);
+        }
+
+        public IEnumerable<TimesheetEntry> GetLastMonthsTimesheets()
+        {
+            return Repository.All()
+                .Where(t => t.Date > DateTime.Now.AddMonths(-1)).ToList();
+        }
+
+        public IEnumerable<TimesheetEntry> GetTimesheetsByRange(
+            DateTime fromDate, DateTime ToDate)
+        {
+            return Repository.All()
+                .Where(t => t.Date >= fromDate.Date &&
+                            t.Date <= ToDate.Date).ToList();
         }
     }
 }
