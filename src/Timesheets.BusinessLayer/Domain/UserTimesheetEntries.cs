@@ -21,23 +21,6 @@ namespace Timesheets.BusinessLayer.Domain
             Cache.RemoveFromCache(LastMonthsKey(), false);
         }
 
-        private void CacheTimesheetEntryIfInLastMonth(TimesheetEntry timesheetEntry)
-        {
-            List<TimesheetEntry> cachedTimesheetEntries =
-                Cache.Get<List<TimesheetEntry>>(LastMonthsKey());
-
-            if (cachedTimesheetEntries == null)
-                cachedTimesheetEntries = new List<TimesheetEntry>();
-
-            if (!cachedTimesheetEntries.Any(t => t.TimesheetEntryId == timesheetEntry.TimesheetEntryId))
-                cachedTimesheetEntries.Add(timesheetEntry);
-            else
-            {
-                cachedTimesheetEntries.Remove(timesheetEntry);
-                cachedTimesheetEntries.Add(timesheetEntry);
-            }
-        }
-
         public int UserId { get; private set; }
         private readonly CacheSettings _cacheSettings;
 
@@ -75,7 +58,7 @@ namespace Timesheets.BusinessLayer.Domain
             timesheetEntry =
                 _timesheetEntryService.ValidateAndInsertOrUpdate(timesheetEntry, auditUser.Id);
             _timesheetEntryService.SaveChanges();
-            CacheTimesheetEntryIfInLastMonth(timesheetEntry);
+            ClearCache();
             return timesheetEntry;
         }
     }
