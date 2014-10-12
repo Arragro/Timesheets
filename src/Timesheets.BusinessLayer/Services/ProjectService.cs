@@ -1,5 +1,6 @@
 ﻿using Arragro.Common.ServiceBase;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Timesheets.DataLayer.Interfaces;
 using Timesheets.DataLayer.Models;
@@ -53,6 +54,13 @@ namespace Timesheets.BusinessLayer.Services
             var add = default(Guid) == model.ProjectId;
             AddOrUpdateAudit(model, userId, add);
             return Repository.InsertOrUpdate(model, add);
+        }
+
+        public IEnumerable<Project> GetUsersProjects(int userId)
+        {
+            return Repository.All()
+                .Where(p => p.OwnerUserId == userId)
+                .ToList();
         }
     }
 }

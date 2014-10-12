@@ -92,7 +92,7 @@ namespace Timesheets.BusinessLayer.Domain
 
         public IEnumerable<Project> GetUsersProjects()
         {
-            return Enumerable.Empty<Project>();
+            return _projectService.GetUsersProjects(UserId);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Arragro.Common.BusinessRules;
 using Microsoft.Practices.Unity;
 using System;
+using System.Linq;
 using Timesheets.BusinessLayer.Domain;
 using Timesheets.BusinessLayer.Services;
 using Timesheets.DataLayer.Models;
@@ -169,6 +170,32 @@ namespace Timesheets.Tests.Domain.UnitTests
                 project, 2);
 
             Assert.Equal(project.OwnerUserId, 2);
+        }
+
+        [Fact]
+        public void get_User_Projects()
+        {
+            var fooUser = TestHelper.GetFoo();
+            var userProjectAdministration = TestHelper.GetUserProjectAdministration(fooUser.Id);
+
+            userProjectAdministration.AddProject(
+                new Project
+                {
+                    Name = "Test 1",
+                    StartDate = DateTime.Now,
+                    EndDate = DateTime.Now.AddDays(1)
+                });
+
+            userProjectAdministration.AddProject(
+                new Project
+                {
+                    Name = "Test 2",
+                    StartDate = DateTime.Now,
+                    EndDate = DateTime.Now.AddDays(1)
+                });
+
+            var userProjects = userProjectAdministration.GetUsersProjects();
+            Assert.Equal(2, userProjects.Count());
         }
     }
 }
