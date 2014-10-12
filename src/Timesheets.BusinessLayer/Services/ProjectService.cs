@@ -8,7 +8,7 @@ namespace Timesheets.BusinessLayer.Services
 {
     public class ProjectService : AuditableService<IProjectRepository, Project, Guid, int>
     {
-        public const string REQUIRED_USERID = "The project must have a UserId";
+        public const string REQUIRED_OWNERUSERID = "The project must have a OwnerUserId";
         public const string DUPLICATE_NAME_FOR_USER = "There is already a project with the name {0} that you have created, project names must be unique";
         public const string PROJECT_MUST_BE_AT_LEAST_A_DAY_LONG = "A project must be at least a day long, please adjust the start and end dates";
 
@@ -17,16 +17,16 @@ namespace Timesheets.BusinessLayer.Services
         {
         }
 
-        private void HasUserId(Project model)
+        private void HasOwnerUserId(Project model)
         {
-            if (model.UserId == default(int))
-                RulesException.ErrorFor(x => x.UserId, REQUIRED_USERID);
+            if (model.OwnerUserId == default(int))
+                RulesException.ErrorFor(x => x.OwnerUserId, REQUIRED_OWNERUSERID);
         }
 
         private void ProjectUniqueForUser(Project model)
         {
             if (Repository.All()
-                    .Where(x => x.UserId == model.UserId
+                    .Where(x => x.OwnerUserId == model.OwnerUserId
                              && x.Name == model.Name
                              && x.ProjectId != model.ProjectId)
                     .Any())
@@ -41,7 +41,7 @@ namespace Timesheets.BusinessLayer.Services
 
         protected override void ValidateModelRules(Project model)
         {
-            HasUserId(model);
+            HasOwnerUserId(model);
             ProjectUniqueForUser(model);
             ValidateDates(model);
 

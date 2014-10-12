@@ -2,8 +2,6 @@
 using Microsoft.Practices.Unity;
 using System;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using Timesheets.BusinessLayer.Services;
 using Timesheets.DataLayer.Models;
 using Xunit;
@@ -58,7 +56,7 @@ namespace Timesheets.Tests.Services.UnitTests
                         Assert.NotNull(ex.ContainsErrorForProperty(".Name"));
                         Assert.NotNull(ex.ContainsErrorForProperty(".Code"));
                         Assert.NotNull(ex.ContainsErrorForProperty(".PurchaseOrderNumber"));
-                        Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == ProjectService.REQUIRED_USERID));
+                        Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == ProjectService.REQUIRED_OWNERUSERID));
                         Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == ProjectService.PROJECT_MUST_BE_AT_LEAST_A_DAY_LONG));
                         throw ex;
                     }
@@ -80,7 +78,7 @@ namespace Timesheets.Tests.Services.UnitTests
                     }
                     catch (RulesException ex)
                     {
-                        Assert.Equal(ex.Errors[0].Message, ProjectService.REQUIRED_USERID);
+                        Assert.Equal(ex.Errors[0].Message, ProjectService.REQUIRED_OWNERUSERID);
                         throw;
                     }
                 });
@@ -95,7 +93,7 @@ namespace Timesheets.Tests.Services.UnitTests
             var project1 = new Project
             {
                 Name = "Test",
-                UserId = userId,
+                OwnerUserId = userId,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddDays(1)
             };
@@ -105,7 +103,7 @@ namespace Timesheets.Tests.Services.UnitTests
             var project2 = new Project
             {
                 Name = "Test",
-                UserId = userId,
+                OwnerUserId = userId,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddDays(1)
             };
@@ -132,7 +130,7 @@ namespace Timesheets.Tests.Services.UnitTests
             var project = new Project
             {
                 Name = "Test",
-                UserId = userId,
+                OwnerUserId = userId,
                 StartDate = DateTime.Now.AddDays(1),
                 EndDate = DateTime.Now
             };

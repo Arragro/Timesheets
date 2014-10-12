@@ -15,9 +15,9 @@ namespace Timesheets.DataLayer.Models
         [MaxLength(20)]
         public string PurchaseOrderNumber { get; set; }
         public decimal Budget { get; set; }
-        public int WeeklyUserHoursLimit { get; set; }
+        public int WeeklyContributorHoursLimit { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public int UserId { get; set; }
+        public int OwnerUserId { get; set; }
     }
 }
