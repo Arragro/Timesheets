@@ -64,18 +64,21 @@ namespace Timesheets.BusinessLayer.Services
             return Repository.InsertOrUpdate(model, add);
         }
 
-        public IEnumerable<TimesheetEntry> GetLastMonthsTimesheets()
+        public IEnumerable<TimesheetEntry> GetLastMonthsTimesheets(int userId)
         {
             return Repository.All()
-                .Where(t => t.Date > DateTime.Now.AddMonths(-1)).ToList();
+                .Where(t => t.UserId == userId
+                         && t.Date > DateTime.Now.AddMonths(-1)).ToList();
         }
 
         public IEnumerable<TimesheetEntry> GetTimesheetsByRange(
+            int userId,
             DateTime fromDate, DateTime ToDate)
         {
             return Repository.All()
-                .Where(t => t.Date >= fromDate.Date &&
-                            t.Date <= ToDate.Date).ToList();
+                .Where(t => t.UserId == userId
+                         && t.Date >= fromDate.Date
+                         && t.Date <= ToDate.Date).ToList();
         }
     }
 }

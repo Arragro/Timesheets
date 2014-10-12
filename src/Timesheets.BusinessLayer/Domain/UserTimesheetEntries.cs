@@ -1,8 +1,6 @@
 ﻿using Arragro.Common.CacheProvider;
-using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Timesheets.BusinessLayer.Services;
 using Timesheets.DataLayer.Models;
 
@@ -43,20 +41,20 @@ namespace Timesheets.BusinessLayer.Domain
         {
             return Cache.Get(
                 LastMonthsKey(),
-                () => _timesheetEntryService.GetLastMonthsTimesheets());
+                () => _timesheetEntryService.GetLastMonthsTimesheets(UserId));
         }
 
         public IEnumerable<TimesheetEntry> GetRangeOfTimesheetEntries(
             DateTime fromDate, DateTime toDate)
         {
-            return _timesheetEntryService.GetTimesheetsByRange(fromDate, toDate);
+            return _timesheetEntryService.GetTimesheetsByRange(UserId, fromDate, toDate);
         }
 
         public TimesheetEntry AddTimesheetEntry(
-            TimesheetEntry timesheetEntry, IUser<int> auditUser)
+            TimesheetEntry timesheetEntry)
         {
             timesheetEntry =
-                _timesheetEntryService.ValidateAndInsertOrUpdate(timesheetEntry, auditUser.Id);
+                _timesheetEntryService.ValidateAndInsertOrUpdate(timesheetEntry, UserId);
             _timesheetEntryService.SaveChanges();
             ClearCache();
             return timesheetEntry;
