@@ -1,6 +1,5 @@
 ﻿using Arragro.Common.BusinessRules;
 using System;
-using Timesheets.DataLayer.Models.Bases;
 
 namespace Timesheets.DataLayer.Models
 {
