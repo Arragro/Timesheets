@@ -7,7 +7,7 @@ using Timesheets.DataLayer.Models;
 
 namespace Timesheets.BusinessLayer.Services
 {
-    public class ProjectService : AuditableService<IProjectRepository, Project, Guid, int>
+    public class ProjectService : AuditableService<IProjectRepository, Project, Guid, Guid>
     {
         public const string REQUIRED_OWNERUSERID = "The project must have a OwnerUserId";
         public const string DUPLICATE_NAME_FOR_USER = "There is already a project with the name {0} that you have created, project names must be unique";
@@ -20,7 +20,7 @@ namespace Timesheets.BusinessLayer.Services
 
         private void HasOwnerUserId(Project model)
         {
-            if (model.OwnerUserId == default(int))
+            if (model.OwnerUserId == default(Guid))
                 RulesException.ErrorFor(x => x.OwnerUserId, REQUIRED_OWNERUSERID);
         }
 
@@ -49,14 +49,14 @@ namespace Timesheets.BusinessLayer.Services
             if (RulesException.Errors.Any()) throw RulesException;
         }
 
-        public override Project InsertOrUpdate(Project model, int userId)
+        public override Project InsertOrUpdate(Project model, Guid userId)
         {
             var add = default(Guid) == model.ProjectId;
             AddOrUpdateAudit(model, userId, add);
             return Repository.InsertOrUpdate(model, add);
         }
 
-        public IEnumerable<Project> GetUsersProjects(int userId)
+        public IEnumerable<Project> GetUsersProjects(Guid userId)
         {
             return Repository.All()
                 .Where(p => p.OwnerUserId == userId)

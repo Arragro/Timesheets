@@ -8,7 +8,7 @@ using Timesheets.DataLayer.Models;
 
 namespace Timesheets.BusinessLayer.Services
 {
-    public class TimesheetEntryService : AuditableService<ITimesheetEntryRepository, TimesheetEntry, Guid, int>
+    public class TimesheetEntryService : AuditableService<ITimesheetEntryRepository, TimesheetEntry, Guid, Guid>
     {
         public const string REQUIRED_USERID = "The time sheet entry must have a UserId";
         public const string DATE_NOT_SET = "The date must be set";
@@ -22,7 +22,7 @@ namespace Timesheets.BusinessLayer.Services
 
         private void HasUserId(TimesheetEntry model)
         {
-            if (model.UserId == default(int))
+            if (model.UserId == default(Guid))
                 RulesException.ErrorFor(x => x.UserId, REQUIRED_USERID);
         }
 
@@ -57,14 +57,14 @@ namespace Timesheets.BusinessLayer.Services
             if (RulesException.Errors.Any()) throw RulesException;
         }
 
-        public override TimesheetEntry InsertOrUpdate(TimesheetEntry model, int userId)
+        public override TimesheetEntry InsertOrUpdate(TimesheetEntry model, Guid userId)
         {
             var add = default(Guid) == model.TimesheetEntryId;
             AddOrUpdateAudit(model, userId, add);
             return Repository.InsertOrUpdate(model, add);
         }
 
-        public IEnumerable<TimesheetEntry> GetLastMonthsTimesheets(int userId)
+        public IEnumerable<TimesheetEntry> GetLastMonthsTimesheets(Guid userId)
         {
             return Repository.All()
                 .Where(t => t.UserId == userId
@@ -72,7 +72,7 @@ namespace Timesheets.BusinessLayer.Services
         }
 
         public IEnumerable<TimesheetEntry> GetTimesheetsByRange(
-            int userId,
+            Guid userId,
             DateTime fromDate, DateTime ToDate)
         {
             return Repository.All()

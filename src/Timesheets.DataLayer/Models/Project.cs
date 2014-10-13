@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Timesheets.DataLayer.Models
 {
-    public class Project : Auditable<int>
+    public class Project : Auditable<Guid>
     {
         public Guid ProjectId { get; set; }
         [Required]
@@ -15,9 +15,10 @@ namespace Timesheets.DataLayer.Models
         [MaxLength(20)]
         public string PurchaseOrderNumber { get; set; }
         public decimal Budget { get; set; }
-        public int WeeklyContributorHoursLimit { get; set; }
+        public decimal WeeklyContributorHoursLimit { get; set; }
+        public bool RequiresApproval { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public int OwnerUserId { get; set; }
+        public Guid OwnerUserId { get; set; }
     }
 }

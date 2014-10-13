@@ -19,7 +19,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                 {
                     try
                     {
-                        new UserProjectAdministration(1, null);
+                        new UserProjectAdministration(Guid.NewGuid(), null);
                     }
                     catch (ArgumentNullException ex)
                     {
@@ -82,7 +82,7 @@ namespace Timesheets.Tests.Domain.UnitTests
 
                         var tempUserProjectAdministration =
                             unityContainer.Resolve<UserProjectAdministration>(
-                                new ParameterOverride("userId", fooUser.Id + 1),
+                                new ParameterOverride("userId", Guid.NewGuid()),
                                 new ParameterOverride("projectService", projectService));
 
                         tempUserProjectAdministration.UpdateProject(project);
@@ -107,7 +107,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                     Name = "Test",
                     StartDate = DateTime.Now,
                     EndDate = DateTime.Now.AddDays(1),
-                    OwnerUserId = 6
+                    OwnerUserId = Guid.NewGuid()
                 });
 
             Assert.Equal(project.OwnerUserId, fooUser.Id);
@@ -138,11 +138,11 @@ namespace Timesheets.Tests.Domain.UnitTests
                             });
 
                         var tempUserProjectAdministration = unityContainer.Resolve<UserProjectAdministration>(
-                            new ParameterOverride("userId", fooUser.Id + 1),
+                            new ParameterOverride("userId", Guid.NewGuid()),
                             new ParameterOverride("projectService", projectService));
 
                         tempUserProjectAdministration.TransferProjectOwnership(
-                            project, fooUser.Id + 1);
+                            project, Guid.NewGuid());
                     }
                     catch (RulesException ex)
                     {
@@ -166,10 +166,11 @@ namespace Timesheets.Tests.Domain.UnitTests
                     EndDate = DateTime.Now.AddDays(1)
                 });
 
+            var newOwner = Guid.NewGuid();
             project = userProjectAdministration.TransferProjectOwnership(
-                project, 2);
+                project, newOwner);
 
-            Assert.Equal(project.OwnerUserId, 2);
+            Assert.Equal(project.OwnerUserId, newOwner);
         }
 
         [Fact]

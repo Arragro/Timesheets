@@ -11,7 +11,7 @@ namespace Timesheets.Tests.Domain.UnitTests
     {
         private void Load100TimeSheetEntries(
             UserTimesheetEntries userTimesheetEntries,
-            IUser<int> user)
+            IUser<Guid> user)
         {
             var counter = 0;
             while (counter < 31)

@@ -69,7 +69,7 @@ namespace Timesheets.Tests.Services.UnitTests
         private void TimesheetEntry_fails_on_unset_date()
         {
             var timesheetEntryService = GetTimesheetEntryService();
-            var timesheetEntry = new TimesheetEntry { UserId = 1 };
+            var timesheetEntry = new TimesheetEntry { UserId = Guid.NewGuid() };
             Assert.Throws<RulesException<TimesheetEntry>>(
                 () =>
                 {
@@ -89,7 +89,7 @@ namespace Timesheets.Tests.Services.UnitTests
         private void TimesheetEntry_fails_on_too_many_hours()
         {
             var timesheetEntryService = GetTimesheetEntryService();
-            var timesheetEntry = new TimesheetEntry { UserId = 1, Date = DateTime.Now, NumberOfHours = 25 };
+            var timesheetEntry = new TimesheetEntry { UserId = Guid.NewGuid(), Date = DateTime.Now, NumberOfHours = 25 };
             Assert.Throws<RulesException<TimesheetEntry>>(
                 () =>
                 {
@@ -110,7 +110,7 @@ namespace Timesheets.Tests.Services.UnitTests
         private void TimesheetEntry_fails_on_too_many_hours_multiple_entries()
         {
             var timesheetEntryService = GetTimesheetEntryService();
-            var userId = 1;
+            var userId = Guid.NewGuid();
 
             var timesheetEntry1 = new TimesheetEntry
             {

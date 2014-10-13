@@ -19,13 +19,13 @@ namespace Timesheets.BusinessLayer.Domain
             Cache.RemoveFromCache(LastMonthsKey(), false);
         }
 
-        public int UserId { get; private set; }
+        public Guid UserId { get; private set; }
         private readonly CacheSettings _cacheSettings;
 
         private readonly TimesheetEntryService _timesheetEntryService;
 
         public UserTimesheetEntries(
-            int userId,
+            Guid userId,
             CacheSettings cacheSettings,
             TimesheetEntryService timesheetEntryService)
         {

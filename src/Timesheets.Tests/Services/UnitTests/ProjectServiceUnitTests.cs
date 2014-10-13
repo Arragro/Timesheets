@@ -89,7 +89,7 @@ namespace Timesheets.Tests.Services.UnitTests
         {
             var projectService = GetProjectService();
 
-            var userId = 1;
+            var userId = Guid.NewGuid();
             var project1 = new Project
             {
                 Name = "Test",
@@ -126,7 +126,7 @@ namespace Timesheets.Tests.Services.UnitTests
         public void Project_fails_on_invalid_start_end_dates()
         {
             var projectService = GetProjectService();
-            var userId = 1;
+            var userId = Guid.NewGuid();
             var project = new Project
             {
                 Name = "Test",

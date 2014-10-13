@@ -12,12 +12,12 @@ namespace Timesheets.BusinessLayer.Domain
         public const string PROJECT_HAS_NOT_BEEN_SAVED = "You cannot save a project that has not been saved";
         public const string USER_IS_NOT_AUTHORISED = "User is not authorised to modify the project";
 
-        public int UserId { get; private set; }
+        public Guid UserId { get; private set; }
 
         private readonly ProjectService _projectService;
 
         public UserProjectAdministration(
-            int userId,
+            Guid userId,
             ProjectService projectService)
         {
             if (projectService == null) throw new ArgumentNullException("projectService");
@@ -60,7 +60,7 @@ namespace Timesheets.BusinessLayer.Domain
         }
 
         public Project TransferProjectOwnership(
-            Project project, int newOwnerUserId)
+            Project project, Guid newOwnerUserId)
         {
             EnsureProjectIsAlreadySaved(project);
             IsUserAuthorisedForAdministration(project);
