@@ -47,8 +47,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\ContributorRole.cs" />
+    <Compile Include="InMemoryRepositories\ProjectInvitationRepository.cs" />
     <Compile Include="InMemoryRepositories\ProjectRepository.cs" />
     <Compile Include="InMemoryRepositories\TimesheetEntryRepository.cs" />
+    <Compile Include="Interfaces\IProjectInvitationRepository.cs" />
     <Compile Include="Interfaces\IProjectRepository.cs" />
     <Compile Include="Interfaces\ITimesheetEntryRepository.cs" />
     <Compile Include="Models\Bases\ContributorDetails.cs" />
