@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Arragro.Common.BusinessRules;
+using System;
 using Timesheets.DataLayer.Models.Bases;
 
 namespace Timesheets.DataLayer.Models
 {
-    public class ProjectInvitation : ContributorDetails
+    public class ProjectInvitation : Auditable<Guid>
     {
         public Guid InvitationId { get; set; }
         public Guid ProjectId { get; set; }
