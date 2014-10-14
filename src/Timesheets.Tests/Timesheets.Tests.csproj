@@ -74,6 +74,7 @@
     </Compile>
     <Compile Include="InMemoryUnityContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\UnitTests\ProjectInvitationServiceUnitTest.cs" />
     <Compile Include="Services\UnitTests\TimesheetEntryServiceUnitTests.cs" />
     <Compile Include="Services\UnitTests\ProjectServiceUnitTests.cs" />
     <Compile Include="TestHelper.cs" />

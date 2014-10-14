@@ -8,7 +8,7 @@ namespace Timesheets.BusinessLayer.Services
 {
     public class ProjectInvitationService : AuditableService<IProjectInvitationRepository, ProjectInvitation, Guid, Guid>
     {
-        public const string PROJECID_NOT_SET = "ProjectId is not set";
+        public const string PROJECTID_NOT_SET = "ProjectId is not set";
         public const string USER_IS_NOT_NULL_NOT_SET = "UserId is not null and is not set";
         public const string INVITATIONCODE_IS_NOT_SET = "Invitation Code is not set";
         public const string INVITATION_ACCEPTED_BEFORE_SENT = "Invitation has been accepted before it was sent";
@@ -23,7 +23,7 @@ namespace Timesheets.BusinessLayer.Services
         {
             if (projectInvitation.ProjectId == null ||
                 projectInvitation.ProjectId == default(Guid))
-                RulesException.ErrorFor(x => x.ProjectId, PROJECID_NOT_SET);
+                RulesException.ErrorFor(x => x.ProjectId, PROJECTID_NOT_SET);
         }
 
         private void EnsureUserIdIsSet(ProjectInvitation projectInvitation)

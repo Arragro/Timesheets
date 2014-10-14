@@ -17,12 +17,8 @@ namespace Timesheets.Tests
             unityContainer.RegisterInstance(new CacheSettings(new TimeSpan(0, 0, 0, 10)));
 
             unityContainer.RegisterType<IProjectRepository, ProjectRepository>();
-            unityContainer.RegisterType<ProjectService>();
-
             unityContainer.RegisterType<ITimesheetEntryRepository, TimesheetEntryRepository>();
-            unityContainer.RegisterType<TimesheetEntryService>();
-
-            unityContainer.RegisterType<UserTimesheetEntries>();
+            unityContainer.RegisterType<IProjectInvitationRepository, ProjectInvitationRepository>();
 
             return unityContainer;
         }
