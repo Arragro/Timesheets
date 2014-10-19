@@ -9,12 +9,13 @@ namespace Timesheets.Tests.Domain.UnitTests
 {
     public class UserTimesheetEntriesUnitTests
     {
-        private void Load100TimeSheetEntries(
+        private void LoadTimeSheetEntries(
             UserTimesheetEntries userTimesheetEntries,
-            IUser<Guid> user)
+            IUser<Guid> user,
+            int numberOfTimesheets = 31)
         {
             var counter = 0;
-            while (counter < 31)
+            while (counter < numberOfTimesheets)
             {
                 var timesheetEntry = new TimesheetEntry
                 {
@@ -26,6 +27,38 @@ namespace Timesheets.Tests.Domain.UnitTests
                 userTimesheetEntries.AddTimesheetEntry(timesheetEntry);
                 counter++;
             }
+        }
+
+        [Fact]
+        public void UserTimesheetEntries_instantiation_throws_error_when_null_services_supplied()
+        {
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                {
+                    try
+                    {
+                        new UserTimesheetEntries(Guid.NewGuid(), null, null);
+                    }
+                    catch (ArgumentNullException ex)
+                    {
+                        Assert.Equal(ex.ParamName, "cacheSettings");
+                        throw ex;
+                    }
+                });
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                {
+                    try
+                    {
+                        new UserTimesheetEntries(
+                            Guid.NewGuid(), TestHelper.GetCacheSettings(), null);
+                    }
+                    catch (ArgumentNullException ex)
+                    {
+                        Assert.Equal(ex.ParamName, "timesheetEntryService");
+                        throw ex;
+                    }
+                });
         }
 
         [Fact]
@@ -51,7 +84,7 @@ namespace Timesheets.Tests.Domain.UnitTests
         {
             var fooUser = TestHelper.GetFoo();
             var userTimeSheetEntries = TestHelper.GetUserTimesheetEntries(fooUser.Id);
-            Load100TimeSheetEntries(userTimeSheetEntries, fooUser);
+            LoadTimeSheetEntries(userTimeSheetEntries, fooUser);
 
             var timesheetEntries = userTimeSheetEntries.GetLastMonthsTimesheetEntries();
             Assert.Equal(30, timesheetEntries.Count());
@@ -62,12 +95,32 @@ namespace Timesheets.Tests.Domain.UnitTests
         {
             var fooUser = TestHelper.GetFoo();
             var userTimeSheetEntries = TestHelper.GetUserTimesheetEntries(fooUser.Id);
-            Load100TimeSheetEntries(userTimeSheetEntries, fooUser);
+            LoadTimeSheetEntries(userTimeSheetEntries, fooUser);
 
             var timesheetEntries =
                 userTimeSheetEntries.GetRangeOfTimesheetEntries(
                     DateTime.Now.AddDays(-9), DateTime.Now);
             Assert.Equal(10, timesheetEntries.Count());
+        }
+
+        [Fact]
+        public void get_User_TimesheetEntries_only_return_that_Users()
+        {
+            var numberOfUserTimesheets = 5;
+
+            var fooUser = TestHelper.GetFoo();
+            var fooUserTimeSheetEntries = TestHelper.GetUserTimesheetEntries(fooUser.Id);
+            LoadTimeSheetEntries(fooUserTimeSheetEntries, fooUser, numberOfUserTimesheets);
+
+            var barUser = TestHelper.GetBar();
+            var barUserTimeSheetEntries = TestHelper.GetUserTimesheetEntries(barUser.Id);
+            LoadTimeSheetEntries(barUserTimeSheetEntries, barUser, numberOfUserTimesheets);
+
+            Assert.Equal(numberOfUserTimesheets,
+                fooUserTimeSheetEntries.GetLastMonthsTimesheetEntries().Count());
+            Assert.Equal(numberOfUserTimesheets,
+                barUserTimeSheetEntries.GetRangeOfTimesheetEntries(
+                    DateTime.Now.AddDays(0 - numberOfUserTimesheets), DateTime.Now).Count());
         }
     }
 }
