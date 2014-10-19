@@ -8,15 +8,18 @@ namespace Timesheets.BusinessLayer.Domain
 {
     public class UserTimesheetEntries
     {
-        private string LastMonthsKey()
+        private string LastMonthsKey
         {
-            const string LastMonths = "UserTimesheetEntries:LastMonths:{0}";
-            return string.Format(LastMonths, UserId);
+            get
+            {
+                const string LastMonths = "UserTimesheetEntries:LastMonths:{0}";
+                return string.Format(LastMonths, UserId);
+            }
         }
 
         private void ClearCache()
         {
-            Cache.RemoveFromCache(LastMonthsKey(), false);
+            Cache.RemoveFromCache(LastMonthsKey, false);
         }
 
         public Guid UserId { get; private set; }
@@ -40,8 +43,9 @@ namespace Timesheets.BusinessLayer.Domain
         public IEnumerable<TimesheetEntry> GetLastMonthsTimesheetEntries()
         {
             return Cache.Get(
-                LastMonthsKey(),
-                () => _timesheetEntryService.GetLastMonthsTimesheets(UserId));
+                LastMonthsKey,
+                () => _timesheetEntryService.GetLastMonthsTimesheets(UserId),
+                _cacheSettings);
         }
 
         public IEnumerable<TimesheetEntry> GetRangeOfTimesheetEntries(

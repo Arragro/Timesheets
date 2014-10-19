@@ -56,7 +56,7 @@ namespace Timesheets.BusinessLayer.Services
             return Repository.InsertOrUpdate(model, add);
         }
 
-        public IEnumerable<Project> GetUsersProjects(Guid userId)
+        public IEnumerable<Project> GetUserProjects(Guid userId)
         {
             return Repository.All()
                 .Where(p => p.OwnerUserId == userId)
