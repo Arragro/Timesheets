@@ -142,5 +142,83 @@ namespace Timesheets.Tests.Services.UnitTests
                     }
                 });
         }
+
+        [Fact]
+        public void ProjectInvitionService_UserId_already_invited()
+        {
+            var projectIntegrationService = GetProjectInvitationService();
+
+            var projectId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+
+            projectIntegrationService.ValidateAndInsertOrUpdate(
+                new ProjectInvitation
+                    {
+                        ProjectId = projectId,
+                        UserId = userId,
+                        InvitationCode = Guid.NewGuid(),
+                        EmailAddress = VALID_EMAIL_ADDRESS
+                    }, userId);
+
+            Assert.Throws<RulesException<ProjectInvitation>>(
+                () =>
+                {
+                    try
+                    {
+                        projectIntegrationService.ValidateModel(
+                            new ProjectInvitation
+                            {
+                                ProjectId = projectId,
+                                UserId = userId,
+                                InvitationCode = Guid.NewGuid(),
+                                EmailAddress = VALID_EMAIL_ADDRESS
+                            });
+                    }
+                    catch (RulesException ex)
+                    {
+                        Assert.Equal(1, ex.Errors.Count);
+                        Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == ProjectInvitationService.INVITATION_ALREADY_EXISTS_FOR_THIS_USERID));
+                        throw ex;
+                    }
+                });
+        }
+
+        [Fact]
+        public void ProjectInvitionService_EmailAddress_already_invited()
+        {
+            var projectIntegrationService = GetProjectInvitationService();
+
+            var projectId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+
+            projectIntegrationService.ValidateAndInsertOrUpdate(
+                new ProjectInvitation
+                {
+                    ProjectId = projectId,
+                    InvitationCode = Guid.NewGuid(),
+                    EmailAddress = VALID_EMAIL_ADDRESS
+                }, userId);
+
+            Assert.Throws<RulesException<ProjectInvitation>>(
+                () =>
+                {
+                    try
+                    {
+                        projectIntegrationService.ValidateModel(
+                            new ProjectInvitation
+                            {
+                                ProjectId = projectId,
+                                InvitationCode = Guid.NewGuid(),
+                                EmailAddress = VALID_EMAIL_ADDRESS
+                            });
+                    }
+                    catch (RulesException ex)
+                    {
+                        Assert.Equal(1, ex.Errors.Count);
+                        Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == ProjectInvitationService.INVITATION_ALREADY_EXISTS_FOR_THIS_EMAILADDRESS));
+                        throw ex;
+                    }
+                });
+        }
     }
 }
