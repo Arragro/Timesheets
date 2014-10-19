@@ -1,4 +1,5 @@
 ﻿using Arragro.Common.BusinessRules;
+using Microsoft.AspNet.Identity;
 using Microsoft.Practices.Unity;
 using System;
 using System.Linq;
@@ -11,6 +12,24 @@ namespace Timesheets.Tests.Domain.UnitTests
 {
     public class UserProjectAdministrationUnitTests
     {
+        private void LoadProjects(
+            UserProjectAdministration userProjectAdministration,
+            int numberOfProjects = 2)
+        {
+            var counter = 0;
+            while (counter < numberOfProjects)
+            {
+                var project = new Project
+                {
+                    Name = "Test " + (counter + 1).ToString(),
+                    StartDate = DateTime.Now,
+                    EndDate = DateTime.Now.AddDays(1)
+                };
+                userProjectAdministration.AddProject(project);
+                counter++;
+            }
+        }
+
         [Fact]
         public void UserProjectAdministrion_instantiation_throws_error_when_null_services_supplied()
         {
@@ -19,11 +38,40 @@ namespace Timesheets.Tests.Domain.UnitTests
                 {
                     try
                     {
-                        new UserProjectAdministration(Guid.NewGuid(), null);
+                        new UserProjectAdministration(Guid.NewGuid(), null, null, null);
+                    }
+                    catch (ArgumentNullException ex)
+                    {
+                        Assert.Equal(ex.ParamName, "cacheSettings");
+                        throw ex;
+                    }
+                });
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                {
+                    try
+                    {
+                        new UserProjectAdministration(
+                            Guid.NewGuid(), TestHelper.GetCacheSettings(), null, null);
                     }
                     catch (ArgumentNullException ex)
                     {
                         Assert.Equal(ex.ParamName, "projectService");
+                        throw ex;
+                    }
+                });
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                {
+                    try
+                    {
+                        new UserProjectAdministration(
+                            Guid.NewGuid(), TestHelper.GetCacheSettings(),
+                            TestHelper.UnityContainer.Resolve<ProjectService>(), null);
+                    }
+                    catch (ArgumentNullException ex)
+                    {
+                        Assert.Equal(ex.ParamName, "projectInvitationService");
                         throw ex;
                     }
                 });
@@ -179,24 +227,61 @@ namespace Timesheets.Tests.Domain.UnitTests
             var fooUser = TestHelper.GetFoo();
             var userProjectAdministration = TestHelper.GetUserProjectAdministration(fooUser.Id);
 
-            userProjectAdministration.AddProject(
-                new Project
-                {
-                    Name = "Test 1",
-                    StartDate = DateTime.Now,
-                    EndDate = DateTime.Now.AddDays(1)
-                });
+            LoadProjects(userProjectAdministration);
 
-            userProjectAdministration.AddProject(
-                new Project
-                {
-                    Name = "Test 2",
-                    StartDate = DateTime.Now,
-                    EndDate = DateTime.Now.AddDays(1)
-                });
-
-            var userProjects = userProjectAdministration.GetUsersProjects();
+            var userProjects = userProjectAdministration.GetUserProjects();
             Assert.Equal(2, userProjects.Count());
+        }
+
+        [Fact]
+        public void get_User_Projects_only_returns_that_Users()
+        {
+            var fooUser = TestHelper.GetFoo();
+            var fooUserProjectAdministration = TestHelper.GetUserProjectAdministration(fooUser.Id);
+
+            var barUser = TestHelper.GetBar();
+            var barUserProjectAdministration = TestHelper.GetUserProjectAdministration(barUser.Id);
+
+            LoadProjects(fooUserProjectAdministration);
+            LoadProjects(barUserProjectAdministration);
+
+            var userProjects = barUserProjectAdministration.GetUserProjects();
+            Assert.Equal(2, userProjects.Count());
+        }
+
+        [Fact]
+        public void UserProjectAdministration_Invite_User_to_Project()
+        {
+            var user = TestHelper.GetFoo();
+            var userProjectAdministration = TestHelper.GetUserProjectAdministration(user.Id);
+
+            LoadProjects(userProjectAdministration, 1);
+            var project = userProjectAdministration.GetUserProjects().First();
+
+            var projectInvitation = userProjectAdministration.InviteUserToProject(project, TestHelper.VALID_EMAIL_ADDRESS, user);
+
+            Assert.NotNull(projectInvitation);
+            Assert.NotEqual(default(Guid), projectInvitation.ProjectInvitationId);
+        }
+
+        [Fact]
+        public void UserProjectAdministration_returns_Invitations_for_Project()
+        {
+            var user = TestHelper.GetFoo();
+            var userProjectAdministration = TestHelper.GetUserProjectAdministration(user.Id);
+
+            LoadProjects(userProjectAdministration, 2);
+            var project1 = userProjectAdministration.GetUserProjects().First();
+            var project2 = userProjectAdministration.GetUserProjects().Last();
+
+            var project1Invitation = userProjectAdministration.InviteUserToProject(project1, TestHelper.VALID_EMAIL_ADDRESS, user);
+            var project2Invitation = userProjectAdministration.InviteUserToProject(project2, TestHelper.VALID_EMAIL_ADDRESS, user);
+
+            var project2Invitations = userProjectAdministration.GetProjectInvitations(project2);
+
+            Assert.NotNull(project2Invitations);
+            Assert.Equal(1, project2Invitations.Count());
+            Assert.Equal(project2Invitation.ProjectInvitationId, project2Invitations.First().ProjectInvitationId);
         }
     }
 }

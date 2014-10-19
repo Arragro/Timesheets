@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using Arragro.Common.CacheProvider;
+using Microsoft.AspNet.Identity;
 using Microsoft.Practices.Unity;
 using Moq;
 using System;
@@ -8,18 +9,31 @@ namespace Timesheets.Tests
 {
     public static class TestHelper
     {
+        public const string VALID_EMAIL_ADDRESS = "email.is.good@test.com";
+
+        public static IUnityContainer UnityContainer
+        {
+            get
+            {
+                return InMemoryUnityContainer.GetInMemoryContainer();
+            }
+        }
+
         public static UserTimesheetEntries GetUserTimesheetEntries(Guid userId)
         {
-            var unityContainer = InMemoryUnityContainer.GetInMemoryContainer();
-            return unityContainer.Resolve<UserTimesheetEntries>(
+            return UnityContainer.Resolve<UserTimesheetEntries>(
                 new ParameterOverride("userId", userId));
         }
 
         public static UserProjectAdministration GetUserProjectAdministration(Guid userId)
         {
-            var unityContainer = InMemoryUnityContainer.GetInMemoryContainer();
-            return unityContainer.Resolve<UserProjectAdministration>(
+            return UnityContainer.Resolve<UserProjectAdministration>(
                 new ParameterOverride("userId", userId));
+        }
+
+        public static CacheSettings GetCacheSettings()
+        {
+            return UnityContainer.Resolve<CacheSettings>();
         }
 
         public static IUser<Guid> GetUser(Guid id, string userName)
@@ -33,6 +47,11 @@ namespace Timesheets.Tests
         public static IUser<Guid> GetFoo()
         {
             return GetUser(Guid.NewGuid(), "Foo");
+        }
+
+        public static IUser<Guid> GetBar()
+        {
+            return GetUser(Guid.NewGuid(), "Bar");
         }
     }
 }
