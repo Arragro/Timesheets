@@ -16,5 +16,20 @@ namespace Timesheets.DataLayer.Models
         public Guid InvitationCode { get; set; }
         public bool InvitationSent { get; set; }
         public bool? InvitationAccepted { get; set; }
+
+        public ProjectInvitation()
+        {
+        }
+
+        public ProjectInvitation(
+            Project project,
+            string emailAddress,
+            Guid? userId = null)
+        {
+            ProjectId = project.ProjectId;
+            UserId = userId;
+            EmailAddress = emailAddress;
+            InvitationCode = Guid.NewGuid();
+        }
     }
 }

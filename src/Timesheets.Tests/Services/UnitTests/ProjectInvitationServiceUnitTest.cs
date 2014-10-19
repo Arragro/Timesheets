@@ -15,7 +15,6 @@ namespace Timesheets.Tests.Services.UnitTests
             var unitContainer = InMemoryUnityContainer.GetInMemoryContainer();
             return unitContainer.Resolve<ProjectInvitationService>();
         }
-        private const string VALID_EMAIL_ADDRESS = "email.is.good@test.com";
 
         [Fact]
         public void ProjectInvitationService_validates_model_attributes()
@@ -79,7 +78,7 @@ namespace Timesheets.Tests.Services.UnitTests
                             {
                                 ProjectId = Guid.NewGuid(),
                                 InvitationCode = Guid.NewGuid(),
-                                EmailAddress = VALID_EMAIL_ADDRESS
+                                EmailAddress = TestHelper.VALID_EMAIL_ADDRESS
                             });
             Assert.True(true, "Email Address is valid");
         }
@@ -99,7 +98,7 @@ namespace Timesheets.Tests.Services.UnitTests
                             {
                                 ProjectId = Guid.NewGuid(),
                                 InvitationCode = Guid.NewGuid(),
-                                EmailAddress = VALID_EMAIL_ADDRESS,
+                                EmailAddress = TestHelper.VALID_EMAIL_ADDRESS,
                                 UserId = new Guid()
                             });
                     }
@@ -128,7 +127,7 @@ namespace Timesheets.Tests.Services.UnitTests
                             {
                                 ProjectId = Guid.NewGuid(),
                                 InvitationCode = Guid.NewGuid(),
-                                EmailAddress = VALID_EMAIL_ADDRESS,
+                                EmailAddress = TestHelper.VALID_EMAIL_ADDRESS,
                                 InvitationSent = false,
                                 InvitationAccepted = true
                             });
@@ -157,7 +156,7 @@ namespace Timesheets.Tests.Services.UnitTests
                         ProjectId = projectId,
                         UserId = userId,
                         InvitationCode = Guid.NewGuid(),
-                        EmailAddress = VALID_EMAIL_ADDRESS
+                        EmailAddress = TestHelper.VALID_EMAIL_ADDRESS
                     }, userId);
 
             Assert.Throws<RulesException<ProjectInvitation>>(
@@ -171,7 +170,7 @@ namespace Timesheets.Tests.Services.UnitTests
                                 ProjectId = projectId,
                                 UserId = userId,
                                 InvitationCode = Guid.NewGuid(),
-                                EmailAddress = VALID_EMAIL_ADDRESS
+                                EmailAddress = TestHelper.VALID_EMAIL_ADDRESS
                             });
                     }
                     catch (RulesException ex)
@@ -196,7 +195,7 @@ namespace Timesheets.Tests.Services.UnitTests
                 {
                     ProjectId = projectId,
                     InvitationCode = Guid.NewGuid(),
-                    EmailAddress = VALID_EMAIL_ADDRESS
+                    EmailAddress = TestHelper.VALID_EMAIL_ADDRESS
                 }, userId);
 
             Assert.Throws<RulesException<ProjectInvitation>>(
@@ -209,7 +208,7 @@ namespace Timesheets.Tests.Services.UnitTests
                             {
                                 ProjectId = projectId,
                                 InvitationCode = Guid.NewGuid(),
-                                EmailAddress = VALID_EMAIL_ADDRESS
+                                EmailAddress = TestHelper.VALID_EMAIL_ADDRESS
                             });
                     }
                     catch (RulesException ex)
