@@ -5,7 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Timesheets.Tests.InMemoryIdenty
+namespace Timesheets.Tests.InMemoryIdentity
 {
     public class MemoryUserStore :
                     IUserStore<MemoryUser>, IUserLoginStore<MemoryUser>, IUserRoleStore<MemoryUser>,

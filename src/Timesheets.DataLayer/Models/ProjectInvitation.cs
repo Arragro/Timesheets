@@ -17,6 +17,8 @@ namespace Timesheets.DataLayer.Models
         public bool InvitationSent { get; set; }
         public bool? InvitationAccepted { get; set; }
 
+        public Project Project { get; set; }
+
         public ProjectInvitation()
         {
         }

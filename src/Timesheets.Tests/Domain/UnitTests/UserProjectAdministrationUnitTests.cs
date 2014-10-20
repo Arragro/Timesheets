@@ -14,17 +14,18 @@ namespace Timesheets.Tests.Domain.UnitTests
     {
         private void LoadProjects(
             UserProjectAdministration userProjectAdministration,
+            Guid ownerUserId,
             int numberOfProjects = 2)
         {
             var counter = 0;
             while (counter < numberOfProjects)
             {
-                var project = new Project
-                {
-                    Name = "Test " + (counter + 1).ToString(),
-                    StartDate = DateTime.Now,
-                    EndDate = DateTime.Now.AddDays(1)
-                };
+                var project = new Project(
+                    "Test " + (counter + 1).ToString(),
+                    ownerUserId,
+                    startDate: DateTime.Now,
+                    endDate: DateTime.Now.AddDays(1));
+
                 userProjectAdministration.AddProject(project);
                 counter++;
             }
@@ -89,12 +90,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                     try
                     {
                         userProjectAdministration.UpdateProject(
-                            new Project
-                            {
-                                Name = "Test",
-                                StartDate = DateTime.Now,
-                                EndDate = DateTime.Now.AddDays(1)
-                            });
+                            new Project("Test", Guid.NewGuid()));
                     }
                     catch (RulesException ex)
                     {
@@ -121,12 +117,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                     try
                     {
                         var project = userProjectAdministration.AddProject(
-                            new Project
-                            {
-                                Name = "Test",
-                                StartDate = DateTime.Now,
-                                EndDate = DateTime.Now.AddDays(1)
-                            });
+                            new Project("Test", Guid.NewGuid()));
 
                         var tempUserProjectAdministration =
                             unityContainer.Resolve<UserProjectAdministration>(
@@ -150,13 +141,10 @@ namespace Timesheets.Tests.Domain.UnitTests
             var userProjectAdministration = TestHelper.GetUserProjectAdministration(fooUser.Id);
 
             var project = userProjectAdministration.AddProject(
-                new Project
-                {
-                    Name = "Test",
-                    StartDate = DateTime.Now,
-                    EndDate = DateTime.Now.AddDays(1),
-                    OwnerUserId = Guid.NewGuid()
-                });
+                new Project(
+                    "Test", Guid.NewGuid(),
+                    startDate: DateTime.Now,
+                    endDate: DateTime.Now.AddDays(1)));
 
             Assert.Equal(project.OwnerUserId, fooUser.Id);
         }
@@ -178,12 +166,10 @@ namespace Timesheets.Tests.Domain.UnitTests
                     try
                     {
                         var project = userProjectAdministration.AddProject(
-                            new Project
-                            {
-                                Name = "Test",
-                                StartDate = DateTime.Now,
-                                EndDate = DateTime.Now.AddDays(1)
-                            });
+                            new Project(
+                                "Test", Guid.NewGuid(),
+                                startDate: DateTime.Now,
+                                endDate: DateTime.Now.AddDays(1)));
 
                         var tempUserProjectAdministration = unityContainer.Resolve<UserProjectAdministration>(
                             new ParameterOverride("userId", Guid.NewGuid()),
@@ -207,12 +193,10 @@ namespace Timesheets.Tests.Domain.UnitTests
             var userProjectAdministration = TestHelper.GetUserProjectAdministration(fooUser.Id);
 
             var project = userProjectAdministration.AddProject(
-                new Project
-                {
-                    Name = "Test",
-                    StartDate = DateTime.Now,
-                    EndDate = DateTime.Now.AddDays(1)
-                });
+                new Project(
+                    "Test", Guid.NewGuid(),
+                    startDate: DateTime.Now,
+                    endDate: DateTime.Now.AddDays(1)));
 
             var newOwner = Guid.NewGuid();
             project = userProjectAdministration.TransferProjectOwnership(
@@ -227,7 +211,7 @@ namespace Timesheets.Tests.Domain.UnitTests
             var fooUser = TestHelper.GetFoo();
             var userProjectAdministration = TestHelper.GetUserProjectAdministration(fooUser.Id);
 
-            LoadProjects(userProjectAdministration);
+            LoadProjects(userProjectAdministration, Guid.NewGuid());
 
             var userProjects = userProjectAdministration.GetUserProjects();
             Assert.Equal(2, userProjects.Count());
@@ -242,8 +226,8 @@ namespace Timesheets.Tests.Domain.UnitTests
             var barUser = TestHelper.GetBar();
             var barUserProjectAdministration = TestHelper.GetUserProjectAdministration(barUser.Id);
 
-            LoadProjects(fooUserProjectAdministration);
-            LoadProjects(barUserProjectAdministration);
+            LoadProjects(fooUserProjectAdministration, fooUser.Id);
+            LoadProjects(barUserProjectAdministration, fooUser.Id);
 
             var userProjects = barUserProjectAdministration.GetUserProjects();
             Assert.Equal(2, userProjects.Count());
@@ -255,7 +239,7 @@ namespace Timesheets.Tests.Domain.UnitTests
             var user = TestHelper.GetFoo();
             var userProjectAdministration = TestHelper.GetUserProjectAdministration(user.Id);
 
-            LoadProjects(userProjectAdministration, 1);
+            LoadProjects(userProjectAdministration, user.Id, 1);
             var project = userProjectAdministration.GetUserProjects().First();
 
             var projectInvitation = userProjectAdministration.InviteUserToProject(project, TestHelper.VALID_EMAIL_ADDRESS, user);
@@ -270,7 +254,7 @@ namespace Timesheets.Tests.Domain.UnitTests
             var user = TestHelper.GetFoo();
             var userProjectAdministration = TestHelper.GetUserProjectAdministration(user.Id);
 
-            LoadProjects(userProjectAdministration, 2);
+            LoadProjects(userProjectAdministration, Guid.NewGuid(), 2);
             var project1 = userProjectAdministration.GetUserProjects().First();
             var project2 = userProjectAdministration.GetUserProjects().Last();
 

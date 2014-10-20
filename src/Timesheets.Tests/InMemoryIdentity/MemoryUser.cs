@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace Timesheets.Tests.InMemoryIdenty
+namespace Timesheets.Tests.InMemoryIdentity
 {
     public class MemoryUser : IUser
     {

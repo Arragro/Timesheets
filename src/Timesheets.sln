@@ -16,24 +16,39 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E67A67
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Timesheets.Persistance.EF6", "Timesheets.Persistance.EF6\Timesheets.Persistance.EF6.csproj", "{6C20AF03-B889-41C7-8700-71C3FB621FD6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		IntegrationTests|Any CPU = IntegrationTests|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0ABD85EB-440B-4C2F-8F8E-CB11AC96F066}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0ABD85EB-440B-4C2F-8F8E-CB11AC96F066}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0ABD85EB-440B-4C2F-8F8E-CB11AC96F066}.IntegrationTests|Any CPU.ActiveCfg = IntegrationTests|Any CPU
+		{0ABD85EB-440B-4C2F-8F8E-CB11AC96F066}.IntegrationTests|Any CPU.Build.0 = IntegrationTests|Any CPU
 		{0ABD85EB-440B-4C2F-8F8E-CB11AC96F066}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0ABD85EB-440B-4C2F-8F8E-CB11AC96F066}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4632B3E2-361C-4DB4-ABE1-13C53255B088}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4632B3E2-361C-4DB4-ABE1-13C53255B088}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4632B3E2-361C-4DB4-ABE1-13C53255B088}.IntegrationTests|Any CPU.ActiveCfg = IntegrationTests|Any CPU
+		{4632B3E2-361C-4DB4-ABE1-13C53255B088}.IntegrationTests|Any CPU.Build.0 = IntegrationTests|Any CPU
 		{4632B3E2-361C-4DB4-ABE1-13C53255B088}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4632B3E2-361C-4DB4-ABE1-13C53255B088}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B7BC5E15-E094-432E-BC0D-C1EB07E53C82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B7BC5E15-E094-432E-BC0D-C1EB07E53C82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7BC5E15-E094-432E-BC0D-C1EB07E53C82}.IntegrationTests|Any CPU.ActiveCfg = IntegrationTests|Any CPU
+		{B7BC5E15-E094-432E-BC0D-C1EB07E53C82}.IntegrationTests|Any CPU.Build.0 = IntegrationTests|Any CPU
 		{B7BC5E15-E094-432E-BC0D-C1EB07E53C82}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7BC5E15-E094-432E-BC0D-C1EB07E53C82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C20AF03-B889-41C7-8700-71C3FB621FD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C20AF03-B889-41C7-8700-71C3FB621FD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C20AF03-B889-41C7-8700-71C3FB621FD6}.IntegrationTests|Any CPU.ActiveCfg = IntegrationTests|Any CPU
+		{6C20AF03-B889-41C7-8700-71C3FB621FD6}.IntegrationTests|Any CPU.Build.0 = IntegrationTests|Any CPU
+		{6C20AF03-B889-41C7-8700-71C3FB621FD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C20AF03-B889-41C7-8700-71C3FB621FD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

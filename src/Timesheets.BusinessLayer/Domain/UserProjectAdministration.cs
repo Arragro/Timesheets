@@ -66,7 +66,7 @@ namespace Timesheets.BusinessLayer.Domain
 
         private Project EnsureOwnerUserIdIsTheModifyingUser(Project project)
         {
-            project.OwnerUserId = UserId;
+            project.ChangeProjectOwner(UserId);
             return project;
         }
 
@@ -86,7 +86,7 @@ namespace Timesheets.BusinessLayer.Domain
         {
             EnsureProjectIsAlreadySaved(project);
             IsUserAuthorisedForAdministration(project);
-            project.OwnerUserId = newOwnerUserId;
+            project.ChangeProjectOwner(newOwnerUserId);
 
             _projectService.InsertOrUpdate(project, UserId);
             _projectService.SaveChanges();

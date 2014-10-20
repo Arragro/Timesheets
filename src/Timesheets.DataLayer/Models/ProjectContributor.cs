@@ -18,5 +18,7 @@ namespace Timesheets.DataLayer.Models
         [MaxLength(20)]
         public string PurchaseOrderNumber { get; set; }
         public decimal HourlyRate { get; set; }
+
+        public Project Project { get; set; }
     }
 }

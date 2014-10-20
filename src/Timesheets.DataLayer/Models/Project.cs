@@ -6,19 +6,51 @@ namespace Timesheets.DataLayer.Models
 {
     public class Project : Auditable<Guid>
     {
-        public Guid ProjectId { get; set; }
+        public Guid ProjectId { get; private set; }
         [Required]
         [MaxLength(50)]
-        public string Name { get; set; }
+        public string Name { get; private set; }
+        public Guid OwnerUserId { get; private set; }
         [MaxLength(20)]
-        public string Code { get; set; }
+        public string Code { get; private set; }
         [MaxLength(20)]
-        public string PurchaseOrderNumber { get; set; }
-        public decimal Budget { get; set; }
-        public decimal WeeklyContributorHoursLimit { get; set; }
-        public bool RequiresApproval { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public Guid OwnerUserId { get; set; }
+        public string PurchaseOrderNumber { get; private set; }
+        public decimal? Budget { get; private set; }
+        public decimal? WeeklyContributorHoursLimit { get; private set; }
+        public bool RequiresApproval { get; private set; }
+        public DateTime? StartDate { get; private set; }
+        public DateTime? EndDate { get; private set; }
+
+        protected Project()
+        {
+        }
+
+        public Project(
+            string name, Guid ownerUserId, string code = null, string purchaseOrderNumber = null,
+            decimal? budget = null, decimal? weeklContributorHoursLimit = null,
+            bool requiresApproval = false, DateTime? startDate = null,
+            DateTime? endDate = null)
+        {
+            Name = name;
+            OwnerUserId = ownerUserId;
+            Code = code;
+            PurchaseOrderNumber = purchaseOrderNumber;
+            Budget = budget;
+            WeeklyContributorHoursLimit = weeklContributorHoursLimit;
+            RequiresApproval = requiresApproval;
+            StartDate = startDate;
+            EndDate = endDate;
+        }
+
+        public void ChangeProjectOwner(Guid newOwnerUserId)
+        {
+            OwnerUserId = newOwnerUserId;
+        }
+
+        public void SetProjectId()
+        {
+            if (ProjectId != default(Guid)) throw new Exception("The ProjectId is already set.");
+            ProjectId = Guid.NewGuid();
+        }
     }
 }
