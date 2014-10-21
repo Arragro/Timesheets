@@ -28,7 +28,8 @@ namespace Timesheets.DataLayer.Models
             string emailAddress,
             Guid? userId = null)
         {
-            ProjectId = project == null ? new Guid() : project.ProjectId;
+            if (project == null) throw new ArgumentNullException("project", "The Project supplied is null.");
+            ProjectId = project.ProjectId;
             UserId = userId;
             EmailAddress = emailAddress;
             InvitationCode = Guid.NewGuid();

@@ -17,6 +17,24 @@ namespace Timesheets.Tests.Services.UnitTests
         }
 
         [Fact]
+        public void ProjectInvitation_instantation_fails_with_null_Project()
+        {
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                {
+                    try
+                    {
+                        new ProjectInvitation(null, null);
+                    }
+                    catch (ArgumentNullException ex)
+                    {
+                        Assert.Equal(ex.ParamName, "project");
+                        throw ex;
+                    }
+                });
+        }
+
+        [Fact]
         public void ProjectInvitationService_validates_model_attributes()
         {
             var projectInvitationService = GetProjectInvitationService();
@@ -26,9 +44,7 @@ namespace Timesheets.Tests.Services.UnitTests
                 {
                     try
                     {
-                        var project = new Project("Test", Guid.NewGuid());
-                        project.SetProjectId();
-                        projectInvitationService.ValidateModel(new ProjectInvitation(null, null));
+                        projectInvitationService.ValidateModel(new ProjectInvitation(new Project("Test", Guid.NewGuid()), null));
                     }
                     catch (RulesException ex)
                     {
