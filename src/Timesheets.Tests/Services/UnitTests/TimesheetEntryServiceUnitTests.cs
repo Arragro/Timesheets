@@ -12,7 +12,11 @@ namespace Timesheets.Tests.Services.UnitTests
     {
         private TimesheetEntryService GetTimesheetEntryService()
         {
+#if !INTEGRATION_TESTS
             var unityContainer = InMemoryUnityContainer.GetInMemoryContainer();
+#else
+            var unityContainer = EF6UnityContainer.GetEF6Container();
+#endif
             return unityContainer.Resolve<TimesheetEntryService>();
         }
 
@@ -27,10 +31,9 @@ namespace Timesheets.Tests.Services.UnitTests
                     try
                     {
                         timesheetEntryService.ValidateModel(
-                                new TimesheetEntry
-                                {
-                                    Description = new String('X', 51)
-                                });
+                                new TimesheetEntry(
+                                    new Guid(), new DateTime(),
+                                    0, new String('X', 51)));
                     }
                     catch (RulesException ex)
                     {
@@ -48,7 +51,7 @@ namespace Timesheets.Tests.Services.UnitTests
         {
             var timesheetEntryService = GetTimesheetEntryService();
 
-            var timesheetEntry = new TimesheetEntry { Date = DateTime.Now };
+            var timesheetEntry = new TimesheetEntry(new Guid(), DateTime.Now, 0);
 
             Assert.Throws<RulesException<TimesheetEntry>>(
                 () =>
@@ -69,7 +72,7 @@ namespace Timesheets.Tests.Services.UnitTests
         private void TimesheetEntry_fails_on_unset_date()
         {
             var timesheetEntryService = GetTimesheetEntryService();
-            var timesheetEntry = new TimesheetEntry { UserId = Guid.NewGuid() };
+            var timesheetEntry = new TimesheetEntry(Guid.NewGuid(), new DateTime(), 0);
             Assert.Throws<RulesException<TimesheetEntry>>(
                 () =>
                 {
@@ -89,7 +92,7 @@ namespace Timesheets.Tests.Services.UnitTests
         private void TimesheetEntry_fails_on_too_many_hours()
         {
             var timesheetEntryService = GetTimesheetEntryService();
-            var timesheetEntry = new TimesheetEntry { UserId = Guid.NewGuid(), Date = DateTime.Now, NumberOfHours = 25 };
+            var timesheetEntry = new TimesheetEntry(Guid.NewGuid(), DateTime.Now, 25);
             Assert.Throws<RulesException<TimesheetEntry>>(
                 () =>
                 {
@@ -112,21 +115,14 @@ namespace Timesheets.Tests.Services.UnitTests
             var timesheetEntryService = GetTimesheetEntryService();
             var userId = Guid.NewGuid();
 
-            var timesheetEntry1 = new TimesheetEntry
-            {
-                UserId = userId,
-                Date = DateTime.Now,
-                NumberOfHours = 23.5M
-            };
-            timesheetEntry1 = timesheetEntryService.InsertOrUpdate(timesheetEntry1, userId);
-            Assert.NotSame(default(int), timesheetEntry1.TimesheetEntryId);
+            var timesheetEntry1 = new TimesheetEntry(
+                userId, DateTime.Now, 23.5M);
+            timesheetEntry1 = timesheetEntryService.ValidateAndInsertOrUpdate(timesheetEntry1, userId);
+            timesheetEntryService.SaveChanges();
+            Assert.NotSame(default(Guid), timesheetEntry1.TimesheetEntryId);
 
-            var timesheetEntry2 = new TimesheetEntry
-            {
-                UserId = userId,
-                Date = DateTime.Now,
-                NumberOfHours = 1
-            };
+            var timesheetEntry2 = new TimesheetEntry(
+                userId, DateTime.Now, 1);
 
             Assert.Throws<RulesException<TimesheetEntry>>(
                 () =>
@@ -146,9 +142,10 @@ namespace Timesheets.Tests.Services.UnitTests
                 });
 
             timesheetEntryService.RulesException.Errors.Clear();
-            timesheetEntry2.NumberOfHours = 0.5M;
-            timesheetEntry2 = timesheetEntryService.InsertOrUpdate(timesheetEntry2, userId);
-            Assert.NotSame(default(int), timesheetEntry2.TimesheetEntryId);
+            timesheetEntry2.ChangeNumberOfHours(0.5M);
+            timesheetEntry2 = timesheetEntryService.ValidateAndInsertOrUpdate(timesheetEntry2, userId);
+            timesheetEntryService.SaveChanges();
+            Assert.NotSame(default(Guid), timesheetEntry2.TimesheetEntryId);
 
             Assert.Throws<RulesException<TimesheetEntry>>(
                 () =>
@@ -156,12 +153,8 @@ namespace Timesheets.Tests.Services.UnitTests
                     try
                     {
                         timesheetEntryService.ValidateModel(
-                            new TimesheetEntry
-                            {
-                                UserId = userId,
-                                Date = DateTime.Now,
-                                NumberOfHours = 1
-                            });
+                            new TimesheetEntry(
+                                userId, DateTime.Now, 1));
                     }
                     catch (RulesException ex)
                     {

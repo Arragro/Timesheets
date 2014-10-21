@@ -16,7 +16,7 @@ namespace Timesheets.Persistance.EF6
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<TimesheetEntry>()
-                .HasRequired(t => t.Project)
+                .HasOptional(t => t.Project)
                 .WithMany()
                 .WillCascadeOnDelete(false);
 

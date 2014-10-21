@@ -33,5 +33,11 @@ namespace Timesheets.DataLayer.Models
             EmailAddress = emailAddress;
             InvitationCode = Guid.NewGuid();
         }
+
+        public void SetProjectInvitationId()
+        {
+            if (ProjectInvitationId != default(Guid)) throw new Exception("The ProjectId is already set.");
+            ProjectInvitationId = Guid.NewGuid();
+        }
     }
 }

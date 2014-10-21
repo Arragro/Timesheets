@@ -11,29 +11,30 @@ namespace Timesheets.Tests
     {
         public const string VALID_EMAIL_ADDRESS = "email.is.good@test.com";
 
-        public static IUnityContainer UnityContainer
+        public static IUnityContainer UnityContainer(bool dropDatabase = false)
         {
-            get
-            {
-                return InMemoryUnityContainer.GetInMemoryContainer();
-            }
+#if !INTEGRATION_TESTS
+            return InMemoryUnityContainer.GetInMemoryContainer();
+#else
+            return EF6UnityContainer.GetEF6Container(dropDatabase);
+#endif
         }
 
         public static UserTimesheetEntries GetUserTimesheetEntries(Guid userId)
         {
-            return UnityContainer.Resolve<UserTimesheetEntries>(
+            return UnityContainer(false).Resolve<UserTimesheetEntries>(
                 new ParameterOverride("userId", userId));
         }
 
         public static UserProjectAdministration GetUserProjectAdministration(Guid userId)
         {
-            return UnityContainer.Resolve<UserProjectAdministration>(
+            return UnityContainer(false).Resolve<UserProjectAdministration>(
                 new ParameterOverride("userId", userId));
         }
 
         public static CacheSettings GetCacheSettings()
         {
-            return UnityContainer.Resolve<CacheSettings>();
+            return UnityContainer(false).Resolve<CacheSettings>();
         }
 
         public static IUser<Guid> GetUser(Guid id, string userName)

@@ -36,9 +36,10 @@ namespace Timesheets.BusinessLayer.Services
         {
             if (model.NumberOfHours > 0 && model.NumberOfHours <= 24)
             {
+                var date = model.Date.Date;
                 var timesheetEnties = Repository.All().Where(
                     t => t.UserId == model.UserId
-                      && t.Date.Date == model.Date.Date);
+                      && t.Date == date).ToList();
                 var numberOfCurrentHours = timesheetEnties.Sum(t => t.NumberOfHours);
 
                 if ((numberOfCurrentHours + model.NumberOfHours) > 24)
@@ -60,25 +61,29 @@ namespace Timesheets.BusinessLayer.Services
         public override TimesheetEntry InsertOrUpdate(TimesheetEntry model, Guid userId)
         {
             var add = default(Guid) == model.TimesheetEntryId;
+            if (add) model.SetTimesheetEntryId();
             AddOrUpdateAudit(model, userId, add);
             return Repository.InsertOrUpdate(model, add);
         }
 
         public IEnumerable<TimesheetEntry> GetLastMonthsTimesheets(Guid userId)
         {
+            var date = DateTime.Now.AddMonths(-1).Date;
             return Repository.All()
                 .Where(t => t.UserId == userId
-                         && t.Date > DateTime.Now.AddMonths(-1)).ToList();
+                         && t.Date > date).ToList();
         }
 
         public IEnumerable<TimesheetEntry> GetTimesheetsByRange(
             Guid userId,
-            DateTime fromDate, DateTime ToDate)
+            DateTime fromDate, DateTime toDate)
         {
+            var fromShortDate = fromDate.Date;
+            var toShortDate = toDate.Date;
             return Repository.All()
                 .Where(t => t.UserId == userId
-                         && t.Date >= fromDate.Date
-                         && t.Date <= ToDate.Date).ToList();
+                         && t.Date >= fromDate
+                         && t.Date <= toDate).ToList();
         }
     }
 }

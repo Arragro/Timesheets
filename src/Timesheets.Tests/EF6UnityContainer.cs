@@ -11,7 +11,7 @@ namespace Timesheets.Tests
 {
     public static class EF6UnityContainer
     {
-        public static IUnityContainer GetEF6Container()
+        public static IUnityContainer GetEF6Container(bool dropExistingDatabase = true)
         {
             var unityContainer = new UnityContainer();
 
@@ -19,7 +19,7 @@ namespace Timesheets.Tests
 
             TimesheetsContextExtensions.WithDbContext(x =>
             {
-                if (x.Database.Exists())
+                if (x.Database.Exists() && dropExistingDatabase)
                     x.Database.Delete();
                 x.Database.CreateIfNotExists();
             });

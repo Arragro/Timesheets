@@ -68,7 +68,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                     {
                         new UserProjectAdministration(
                             Guid.NewGuid(), TestHelper.GetCacheSettings(),
-                            TestHelper.UnityContainer.Resolve<ProjectService>(), null);
+                            TestHelper.UnityContainer(false).Resolve<ProjectService>(), null);
                     }
                     catch (ArgumentNullException ex)
                     {

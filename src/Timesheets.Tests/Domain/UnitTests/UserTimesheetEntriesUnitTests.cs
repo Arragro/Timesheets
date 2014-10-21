@@ -17,13 +17,9 @@ namespace Timesheets.Tests.Domain.UnitTests
             var counter = 0;
             while (counter < numberOfTimesheets)
             {
-                var timesheetEntry = new TimesheetEntry
-                {
-                    UserId = user.Id,
-                    Date = DateTime.Now.Date.AddDays(0 - counter),
-                    Description = "Foo Entry",
-                    NumberOfHours = 8
-                };
+                var timesheetEntry = new TimesheetEntry(
+                    user.Id, DateTime.Now.Date.AddDays(0 - counter),
+                    8, "Foo Entry");
                 userTimesheetEntries.AddTimesheetEntry(timesheetEntry);
                 counter++;
             }
@@ -67,13 +63,8 @@ namespace Timesheets.Tests.Domain.UnitTests
             var fooUser = TestHelper.GetFoo();
             var userTimeSheetEntries = TestHelper.GetUserTimesheetEntries(fooUser.Id);
 
-            var timesheetEntry = new TimesheetEntry
-            {
-                UserId = fooUser.Id,
-                Date = DateTime.Now.Date,
-                Description = "Foo Entry",
-                NumberOfHours = 8
-            };
+            var timesheetEntry = new TimesheetEntry(
+                fooUser.Id, DateTime.Now.Date, 8, "Foo Entry");
 
             timesheetEntry = userTimeSheetEntries.AddTimesheetEntry(timesheetEntry);
             Assert.NotEqual(default(Guid), timesheetEntry.TimesheetEntryId);
@@ -99,7 +90,7 @@ namespace Timesheets.Tests.Domain.UnitTests
 
             var timesheetEntries =
                 userTimeSheetEntries.GetRangeOfTimesheetEntries(
-                    DateTime.Now.AddDays(-9), DateTime.Now);
+                    DateTime.Now.AddDays(-10), DateTime.Now);
             Assert.Equal(10, timesheetEntries.Count());
         }
 

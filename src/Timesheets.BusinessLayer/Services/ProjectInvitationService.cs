@@ -84,6 +84,7 @@ namespace Timesheets.BusinessLayer.Services
         public override ProjectInvitation InsertOrUpdate(ProjectInvitation model, Guid userId)
         {
             var add = default(Guid) == model.ProjectInvitationId;
+            if (add) model.SetProjectInvitationId();
             AddOrUpdateAudit(model, userId, add);
             return Repository.InsertOrUpdate(model, add);
         }
