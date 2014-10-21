@@ -6,20 +6,20 @@ namespace Timesheets.DataLayer.Models
 {
     public class ProjectInvitation : Auditable<Guid>
     {
-        public Guid ProjectInvitationId { get; set; }
-        public Guid ProjectId { get; set; }
-        public Guid? UserId { get; set; }
+        public Guid ProjectInvitationId { get; private set; }
+        public Guid ProjectId { get; private set; }
+        public Guid? UserId { get; private set; }
         [MaxLength(254)]
         [Required]
         [EmailAddress]
-        public string EmailAddress { get; set; }
-        public Guid InvitationCode { get; set; }
-        public bool InvitationSent { get; set; }
-        public bool? InvitationAccepted { get; set; }
+        public string EmailAddress { get; private set; }
+        public Guid InvitationCode { get; private set; }
+        public bool InvitationSent { get; private set; }
+        public bool? InvitationAccepted { get; private set; }
 
-        public Project Project { get; set; }
+        public Project Project { get; private set; }
 
-        public ProjectInvitation()
+        protected ProjectInvitation()
         {
         }
 
@@ -28,7 +28,7 @@ namespace Timesheets.DataLayer.Models
             string emailAddress,
             Guid? userId = null)
         {
-            ProjectId = project.ProjectId;
+            ProjectId = project == null ? new Guid() : project.ProjectId;
             UserId = userId;
             EmailAddress = emailAddress;
             InvitationCode = Guid.NewGuid();
@@ -38,6 +38,17 @@ namespace Timesheets.DataLayer.Models
         {
             if (ProjectInvitationId != default(Guid)) throw new Exception("The ProjectId is already set.");
             ProjectInvitationId = Guid.NewGuid();
+        }
+
+        public void SetProjectInvitationSent(bool invitationSent)
+        {
+            InvitationSent = invitationSent;
+        }
+
+        public void SetProjectInvitationAccepted(bool invitationAccepted)
+        {
+            if (!InvitationSent) throw new Exception("You cannot accept an invitation if it hasn't been sent.");
+            InvitationAccepted = invitationAccepted;
         }
     }
 }

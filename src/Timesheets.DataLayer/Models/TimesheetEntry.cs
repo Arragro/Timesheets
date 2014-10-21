@@ -22,10 +22,10 @@ namespace Timesheets.DataLayer.Models
         }
 
         public TimesheetEntry(
-            Guid userId, DateTime date, decimal numberOfHours, string description = null, Guid? projectId = null)
+            Guid userId, DateTime date, decimal numberOfHours, string description = null, Project project = null)
         {
             UserId = userId;
-            ProjectId = projectId;
+            ProjectId = project != null ? project.ProjectId : (Guid?)null;
             Date = date.Date;
             NumberOfHours = numberOfHours;
             Description = description;
