@@ -103,6 +103,8 @@
     </Compile>
     <Compile Include="EF6UnityContainer.cs" />
     <Compile Include="InMemoryUnityContainer.cs" />
+    <Compile Include="Models\ProjectContributorTests.cs" />
+    <Compile Include="Models\ProjectInvitationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\UnitTests\ProjectContributorServiceUnitTests.cs" />
     <Compile Include="Services\UnitTests\ProjectInvitationServiceUnitTest.cs" />
