@@ -4,6 +4,7 @@ using Microsoft.Practices.Unity;
 using Moq;
 using System;
 using Timesheets.BusinessLayer.Domain;
+using Timesheets.BusinessLayer.Services;
 
 namespace Timesheets.Tests
 {
@@ -18,6 +19,21 @@ namespace Timesheets.Tests
 #else
             return EF6UnityContainer.GetEF6Container(dropDatabase);
 #endif
+        }
+
+        public static ProjectService GetProjectService()
+        {
+            return UnityContainer().Resolve<ProjectService>();
+        }
+
+        public static TimesheetEntryService GetTimesheetEntryService()
+        {
+            return UnityContainer().Resolve<TimesheetEntryService>();
+        }
+
+        public static ProjectInvitationService GetProjectInvitationService()
+        {
+            return UnityContainer().Resolve<ProjectInvitationService>();
         }
 
         public static UserTimesheetEntries GetUserTimesheetEntries(Guid userId)

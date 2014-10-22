@@ -8,36 +8,12 @@ using Xunit;
 
 namespace Timesheets.Tests.Services.UnitTests
 {
-    public class ProjectInvitationServiceUnitTest
+    public class projectInvitationServiceUnitTest
     {
-        private ProjectInvitationService GetProjectInvitationService()
-        {
-            var unitContainer = InMemoryUnityContainer.GetInMemoryContainer();
-            return unitContainer.Resolve<ProjectInvitationService>();
-        }
-
         [Fact]
-        public void ProjectInvitation_instantation_fails_with_null_Project()
+        public void projectInvitationService_validates_model_attributes()
         {
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                {
-                    try
-                    {
-                        new ProjectInvitation(null, null);
-                    }
-                    catch (ArgumentNullException ex)
-                    {
-                        Assert.Equal(ex.ParamName, "project");
-                        throw ex;
-                    }
-                });
-        }
-
-        [Fact]
-        public void ProjectInvitationService_validates_model_attributes()
-        {
-            var projectInvitationService = GetProjectInvitationService();
+            var projectInvitationService = TestHelper.GetProjectInvitationService();
 
             Assert.Throws<RulesException<ProjectInvitation>>(
                 () =>
@@ -59,7 +35,7 @@ namespace Timesheets.Tests.Services.UnitTests
         [Fact]
         public void ProjectInviationService_validates_model_email_invalid()
         {
-            var projectIntegrationService = GetProjectInvitationService();
+            var projectInvitationService = TestHelper.GetProjectInvitationService();
 
             Assert.Throws<RulesException<ProjectInvitation>>(
                 () =>
@@ -69,7 +45,7 @@ namespace Timesheets.Tests.Services.UnitTests
                         var project = new Project("Test", Guid.NewGuid());
                         project.SetProjectId();
 
-                        projectIntegrationService.ValidateModel(
+                        projectInvitationService.ValidateModel(
                             new ProjectInvitation(
                                 project, "bad_email"));
                     }
@@ -85,12 +61,12 @@ namespace Timesheets.Tests.Services.UnitTests
         [Fact]
         public void ProjectInviationService_validates_model_email_valid()
         {
-            var projectIntegrationService = GetProjectInvitationService();
+            var projectInvitationService = TestHelper.GetProjectInvitationService();
 
             var project = new Project("Test", Guid.NewGuid());
             project.SetProjectId();
 
-            projectIntegrationService.ValidateModel(
+            projectInvitationService.ValidateModel(
                             new ProjectInvitation(
                                 project, TestHelper.VALID_EMAIL_ADDRESS));
 
@@ -98,9 +74,9 @@ namespace Timesheets.Tests.Services.UnitTests
         }
 
         [Fact]
-        public void ProjectInvitationServie_validates_UserId_invalid()
+        public void projectInvitationService_validates_UserId_invalid()
         {
-            var projectIntegrationService = GetProjectInvitationService();
+            var projectInvitationService = TestHelper.GetProjectInvitationService();
 
             Assert.Throws<RulesException<ProjectInvitation>>(
                 () =>
@@ -110,7 +86,7 @@ namespace Timesheets.Tests.Services.UnitTests
                         var project = new Project("Test", Guid.NewGuid());
                         project.SetProjectId();
 
-                        projectIntegrationService.ValidateModel(
+                        projectInvitationService.ValidateModel(
                             new ProjectInvitation(
                                 project, TestHelper.VALID_EMAIL_ADDRESS, new Guid()));
                     }
@@ -125,9 +101,9 @@ namespace Timesheets.Tests.Services.UnitTests
         }
 
         [Fact]
-        public void ProjectInvitationServie_validates_InvitationAccepted_invalid()
+        public void projectInvitationService_validates_InvitationAccepted_invalid()
         {
-            var projectIntegrationService = GetProjectInvitationService();
+            var projectInvitationService = TestHelper.GetProjectInvitationService();
 
             Assert.Throws<Exception>(
                 () =>
@@ -151,24 +127,25 @@ namespace Timesheets.Tests.Services.UnitTests
         [Fact]
         public void ProjectInvitionService_UserId_already_invited()
         {
-            var projectIntegrationService = GetProjectInvitationService();
+            var userProjectAdministration = TestHelper.GetUserProjectAdministration(Guid.NewGuid());
+            var projectInvitationService = TestHelper.GetProjectInvitationService();
 
             var project = new Project("Test", Guid.NewGuid());
-            project.SetProjectId();
+            userProjectAdministration.AddProject(project);
 
             var userId = Guid.NewGuid();
 
-            projectIntegrationService.ValidateAndInsertOrUpdate(
+            projectInvitationService.ValidateAndInsertOrUpdate(
                 new ProjectInvitation(
                     project, TestHelper.VALID_EMAIL_ADDRESS, userId), userId);
-            projectIntegrationService.SaveChanges();
+            projectInvitationService.SaveChanges();
 
             Assert.Throws<RulesException<ProjectInvitation>>(
                 () =>
                 {
                     try
                     {
-                        projectIntegrationService.ValidateModel(
+                        projectInvitationService.ValidateModel(
                             new ProjectInvitation(
                                 project, TestHelper.VALID_EMAIL_ADDRESS, userId));
                     }
@@ -184,23 +161,23 @@ namespace Timesheets.Tests.Services.UnitTests
         [Fact]
         public void ProjectInvitionService_EmailAddress_already_invited()
         {
-            var projectIntegrationService = GetProjectInvitationService();
+            var userProjectAdministration = TestHelper.GetUserProjectAdministration(Guid.NewGuid());
+            var projectInvitationService = TestHelper.GetProjectInvitationService();
 
             var project = new Project("Test", Guid.NewGuid());
-            project.SetProjectId();
-            var userId = Guid.NewGuid();
+            project = userProjectAdministration.AddProject(project);
 
-            projectIntegrationService.ValidateAndInsertOrUpdate(
+            projectInvitationService.ValidateAndInsertOrUpdate(
                 new ProjectInvitation(
-                    project, TestHelper.VALID_EMAIL_ADDRESS), userId);
-            projectIntegrationService.SaveChanges();
+                    project, TestHelper.VALID_EMAIL_ADDRESS), Guid.NewGuid());
+            projectInvitationService.SaveChanges();
 
             Assert.Throws<RulesException<ProjectInvitation>>(
                 () =>
                 {
                     try
                     {
-                        projectIntegrationService.ValidateModel(
+                        projectInvitationService.ValidateModel(
                             new ProjectInvitation(project, TestHelper.VALID_EMAIL_ADDRESS));
                     }
                     catch (RulesException ex)

@@ -10,20 +10,10 @@ namespace Timesheets.Tests.Services.UnitTests
 {
     public class ProjectServiceUnitTests
     {
-        private ProjectService GetProjectService()
-        {
-#if !INTEGRATION_TESTS
-            var unityContainer = InMemoryUnityContainer.GetInMemoryContainer();
-#else
-            var unityContainer = EF6UnityContainer.GetEF6Container();
-#endif
-            return unityContainer.Resolve<ProjectService>();
-        }
-
         [Fact]
         public void Project_attributes_validate_correctly()
         {
-            var projectService = GetProjectService();
+            var projectService = TestHelper.GetProjectService();
 
             Assert.Throws<RulesException<Project>>(
                 () =>
@@ -76,7 +66,7 @@ namespace Timesheets.Tests.Services.UnitTests
         [Fact]
         public void Project_fails_with_no_UserId()
         {
-            var projectService = GetProjectService();
+            var projectService = TestHelper.GetProjectService();
 
             var project1 = new Project("Test", new Guid());
             Assert.Throws<RulesException<Project>>(
@@ -97,7 +87,7 @@ namespace Timesheets.Tests.Services.UnitTests
         [Fact]
         public void Project_not_valid_when_Name_is_duplicate()
         {
-            var projectService = GetProjectService();
+            var projectService = TestHelper.GetProjectService();
 
             var userId = Guid.NewGuid();
             var project1 = new Project(
@@ -131,7 +121,7 @@ namespace Timesheets.Tests.Services.UnitTests
         [Fact]
         public void Project_fails_on_invalid_start_end_dates()
         {
-            var projectService = GetProjectService();
+            var projectService = TestHelper.GetProjectService();
             var userId = Guid.NewGuid();
             var project = new Project(
                 "Test", userId,

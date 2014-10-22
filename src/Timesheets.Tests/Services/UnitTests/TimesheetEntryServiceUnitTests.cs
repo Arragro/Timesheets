@@ -10,20 +10,10 @@ namespace Timesheets.Tests.Services.UnitTests
 {
     public class TimesheetEntryServiceUnitTests
     {
-        private TimesheetEntryService GetTimesheetEntryService()
-        {
-#if !INTEGRATION_TESTS
-            var unityContainer = InMemoryUnityContainer.GetInMemoryContainer();
-#else
-            var unityContainer = EF6UnityContainer.GetEF6Container();
-#endif
-            return unityContainer.Resolve<TimesheetEntryService>();
-        }
-
         [Fact]
         public void TimesheetEntry_attributes_validate_correctly()
         {
-            var timesheetEntryService = GetTimesheetEntryService();
+            var timesheetEntryService = TestHelper.GetTimesheetEntryService();
 
             Assert.Throws<RulesException<TimesheetEntry>>(
                 () =>
@@ -49,7 +39,7 @@ namespace Timesheets.Tests.Services.UnitTests
         [Fact]
         private void TimesheetEntry_fails_with_no_UserId()
         {
-            var timesheetEntryService = GetTimesheetEntryService();
+            var timesheetEntryService = TestHelper.GetTimesheetEntryService();
 
             var timesheetEntry = new TimesheetEntry(new Guid(), DateTime.Now, 0);
 
@@ -71,7 +61,7 @@ namespace Timesheets.Tests.Services.UnitTests
         [Fact]
         private void TimesheetEntry_fails_on_unset_date()
         {
-            var timesheetEntryService = GetTimesheetEntryService();
+            var timesheetEntryService = TestHelper.GetTimesheetEntryService();
             var timesheetEntry = new TimesheetEntry(Guid.NewGuid(), new DateTime(), 0);
             Assert.Throws<RulesException<TimesheetEntry>>(
                 () =>
@@ -91,7 +81,7 @@ namespace Timesheets.Tests.Services.UnitTests
         [Fact]
         private void TimesheetEntry_fails_on_too_many_hours()
         {
-            var timesheetEntryService = GetTimesheetEntryService();
+            var timesheetEntryService = TestHelper.GetTimesheetEntryService();
             var timesheetEntry = new TimesheetEntry(Guid.NewGuid(), DateTime.Now, 25);
             Assert.Throws<RulesException<TimesheetEntry>>(
                 () =>
@@ -112,7 +102,7 @@ namespace Timesheets.Tests.Services.UnitTests
         [Fact]
         private void TimesheetEntry_fails_on_too_many_hours_multiple_entries()
         {
-            var timesheetEntryService = GetTimesheetEntryService();
+            var timesheetEntryService = TestHelper.GetTimesheetEntryService();
             var userId = Guid.NewGuid();
 
             var timesheetEntry1 = new TimesheetEntry(
