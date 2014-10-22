@@ -57,9 +57,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\UserAdministration.cs" />
     <Compile Include="Domain\UserProjectAdministration.cs" />
     <Compile Include="Domain\UserTimesheetEntries.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ProjectContributorService.cs" />
     <Compile Include="Services\ProjectInvitationService.cs" />
     <Compile Include="Services\ProjectService.cs" />
     <Compile Include="Services\TimesheetEntryService.cs">
