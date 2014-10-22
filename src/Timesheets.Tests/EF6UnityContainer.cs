@@ -27,6 +27,7 @@ namespace Timesheets.Tests
             unityContainer.RegisterType<IProjectRepository, ProjectRepository>();
             unityContainer.RegisterType<ITimesheetEntryRepository, TimesheetEntryRepository>();
             unityContainer.RegisterType<IProjectInvitationRepository, ProjectInvitationRepository>();
+            unityContainer.RegisterType<IProjectContributorRepository, ProjectContributorRepository>();
 
             return unityContainer;
         }

@@ -9,12 +9,12 @@ namespace Timesheets.BusinessLayer.Services
 {
     public class ProjectInvitationService : AuditableService<IProjectInvitationRepository, ProjectInvitation, Guid, Guid>
     {
-        public const string PROJECTID_NOT_SET = "ProjectId is not set";
-        public const string USER_IS_NOT_NULL_NOT_SET = "UserId is not null and is not set";
-        public const string INVITATIONCODE_IS_NOT_SET = "Invitation Code is not set";
-        public const string INVITATION_ACCEPTED_BEFORE_SENT = "Invitation has been accepted before it was sent";
-        public const string INVITATION_ALREADY_EXISTS_FOR_THIS_USERID = "For this Project there is already an invitation for the User";
-        public const string INVITATION_ALREADY_EXISTS_FOR_THIS_EMAILADDRESS = "For this Project there is already an invitation for the Email Address";
+        public const string PROJECTID_NOT_SET = "ProjectId is not set.";
+        public const string USER_IS_NOT_NULL_NOT_SET = "UserId is not null and is not set.";
+        public const string INVITATIONCODE_IS_NOT_SET = "Invitation Code is not set.";
+        public const string INVITATION_ACCEPTED_BEFORE_SENT = "Invitation has been accepted before it was sent.";
+        public const string INVITATION_ALREADY_EXISTS_FOR_THIS_USERID = "For this Project there is already an invitation for the User.";
+        public const string INVITATION_ALREADY_EXISTS_FOR_THIS_EMAILADDRESS = "For this Project there is already an invitation for the Email Address.";
 
         public ProjectInvitationService(
             IProjectInvitationRepository projectInvitationRepository)

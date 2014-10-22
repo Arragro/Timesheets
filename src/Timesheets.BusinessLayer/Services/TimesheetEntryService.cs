@@ -10,10 +10,10 @@ namespace Timesheets.BusinessLayer.Services
 {
     public class TimesheetEntryService : AuditableService<ITimesheetEntryRepository, TimesheetEntry, Guid, Guid>
     {
-        public const string REQUIRED_USERID = "The time sheet entry must have a UserId";
-        public const string DATE_NOT_SET = "The date must be set";
-        public const string HOURS_MORE_THAN_24 = "The number of hours cannot be more than 24";
-        public const string HOURS_MORE_THAN_24_WITH_RELATED_TIMESHEETS = "The number of hours cannot be more than 24 in relation to other time sheet entries.  You only have {0} hours remaining";
+        public const string USER_IS_NOT_NULL_NOT_SET = "UserId is not null and is not set.";
+        public const string DATE_NOT_SET = "The date must be set.";
+        public const string HOURS_MORE_THAN_24 = "The number of hours cannot be more than 24.";
+        public const string HOURS_MORE_THAN_24_WITH_RELATED_TIMESHEETS = "The number of hours cannot be more than 24 in relation to other time sheet entries.  You only have {0} hours remaining.";
 
         public TimesheetEntryService(ITimesheetEntryRepository repository)
             : base(repository)
@@ -23,7 +23,7 @@ namespace Timesheets.BusinessLayer.Services
         private void HasUserId(TimesheetEntry model)
         {
             if (model.UserId == default(Guid))
-                RulesException.ErrorFor(x => x.UserId, REQUIRED_USERID);
+                RulesException.ErrorFor(x => x.UserId, USER_IS_NOT_NULL_NOT_SET);
         }
 
         private void DateIsValid(TimesheetEntry model)

@@ -10,6 +10,11 @@ namespace Timesheets.Tests
 {
     public static class TestHelper
     {
+        static TestHelper()
+        {
+            UnityContainer(true);
+        }
+
         public const string VALID_EMAIL_ADDRESS = "email.is.good@test.com";
 
         public static IUnityContainer UnityContainer(bool dropDatabase = false)
@@ -34,6 +39,11 @@ namespace Timesheets.Tests
         public static ProjectInvitationService GetProjectInvitationService()
         {
             return UnityContainer().Resolve<ProjectInvitationService>();
+        }
+
+        public static ProjectContributorService GetProjectContributorService()
+        {
+            return UnityContainer().Resolve<ProjectContributorService>();
         }
 
         public static UserTimesheetEntries GetUserTimesheetEntries(Guid userId)

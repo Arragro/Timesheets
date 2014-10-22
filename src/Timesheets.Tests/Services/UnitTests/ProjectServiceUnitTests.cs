@@ -1,5 +1,4 @@
 ﻿using Arragro.Common.BusinessRules;
-using Microsoft.Practices.Unity;
 using System;
 using System.Linq;
 using Timesheets.BusinessLayer.Services;
@@ -34,7 +33,7 @@ namespace Timesheets.Tests.Services.UnitTests
                         Assert.NotNull(ex.ContainsErrorForProperty(".Name"));
                         Assert.NotNull(ex.ContainsErrorForProperty(".Code"));
                         Assert.NotNull(ex.ContainsErrorForProperty(".PurchaseOrderNumber"));
-                        Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == ProjectService.REQUIRED_OWNERUSERID));
+                        Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == ProjectService.OWNER_USER_IS_NOT_NULL_NOT_SET));
                         Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == ProjectService.PROJECT_MUST_HAVE_BOTH_START_AND_END_DATE_SET));
                         throw ex;
                     }
@@ -78,7 +77,7 @@ namespace Timesheets.Tests.Services.UnitTests
                     }
                     catch (RulesException ex)
                     {
-                        Assert.Equal(ex.Errors[0].Message, ProjectService.REQUIRED_OWNERUSERID);
+                        Assert.Equal(ex.Errors[0].Message, ProjectService.OWNER_USER_IS_NOT_NULL_NOT_SET);
                         throw;
                     }
                 });

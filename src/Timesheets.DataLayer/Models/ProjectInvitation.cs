@@ -33,6 +33,7 @@ namespace Timesheets.DataLayer.Models
             UserId = userId;
             EmailAddress = emailAddress;
             InvitationCode = Guid.NewGuid();
+            Project = project;
         }
 
         public void SetProjectInvitationId()
