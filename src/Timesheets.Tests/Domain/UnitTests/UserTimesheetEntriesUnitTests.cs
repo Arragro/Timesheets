@@ -33,7 +33,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                 {
                     try
                     {
-                        new UserTimesheetEntries(Guid.NewGuid(), null, null);
+                        new UserTimesheetEntries(TestHelper.GetFoo(), null, null);
                     }
                     catch (ArgumentNullException ex)
                     {
@@ -47,7 +47,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                     try
                     {
                         new UserTimesheetEntries(
-                            Guid.NewGuid(), TestHelper.GetCacheSettings(), null);
+                            TestHelper.GetFoo(), TestHelper.GetCacheSettings(), null);
                     }
                     catch (ArgumentNullException ex)
                     {
@@ -61,7 +61,7 @@ namespace Timesheets.Tests.Domain.UnitTests
         public void add_User_TimesheetEntry()
         {
             var fooUser = TestHelper.GetFoo();
-            var userTimeSheetEntries = TestHelper.GetUserTimesheetEntries(fooUser.Id);
+            var userTimeSheetEntries = TestHelper.GetUserTimesheetEntries(fooUser);
 
             var timesheetEntry = new TimesheetEntry(
                 fooUser.Id, DateTime.Now.Date, 8, "Foo Entry");
@@ -74,7 +74,7 @@ namespace Timesheets.Tests.Domain.UnitTests
         public void get_User_last_months_worth_of_TimesheetEntries()
         {
             var fooUser = TestHelper.GetFoo();
-            var userTimeSheetEntries = TestHelper.GetUserTimesheetEntries(fooUser.Id);
+            var userTimeSheetEntries = TestHelper.GetUserTimesheetEntries(fooUser);
             LoadTimeSheetEntries(userTimeSheetEntries, fooUser);
 
             var timesheetEntries = userTimeSheetEntries.GetLastMonthsTimesheetEntries();
@@ -85,7 +85,7 @@ namespace Timesheets.Tests.Domain.UnitTests
         public void get_User_range_of_TimesheetEntries()
         {
             var fooUser = TestHelper.GetFoo();
-            var userTimeSheetEntries = TestHelper.GetUserTimesheetEntries(fooUser.Id);
+            var userTimeSheetEntries = TestHelper.GetUserTimesheetEntries(fooUser);
             LoadTimeSheetEntries(userTimeSheetEntries, fooUser);
 
             var timesheetEntries =
@@ -100,11 +100,11 @@ namespace Timesheets.Tests.Domain.UnitTests
             var numberOfUserTimesheets = 5;
 
             var fooUser = TestHelper.GetFoo();
-            var fooUserTimeSheetEntries = TestHelper.GetUserTimesheetEntries(fooUser.Id);
+            var fooUserTimeSheetEntries = TestHelper.GetUserTimesheetEntries(fooUser);
             LoadTimeSheetEntries(fooUserTimeSheetEntries, fooUser, numberOfUserTimesheets);
 
             var barUser = TestHelper.GetBar();
-            var barUserTimeSheetEntries = TestHelper.GetUserTimesheetEntries(barUser.Id);
+            var barUserTimeSheetEntries = TestHelper.GetUserTimesheetEntries(barUser);
             LoadTimeSheetEntries(barUserTimeSheetEntries, barUser, numberOfUserTimesheets);
 
             Assert.Equal(numberOfUserTimesheets,

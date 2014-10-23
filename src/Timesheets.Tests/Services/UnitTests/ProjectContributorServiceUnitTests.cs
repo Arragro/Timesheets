@@ -11,12 +11,15 @@ namespace Timesheets.Tests.Services.UnitTests
     {
         private ProjectInvitation GetProjectInvitation()
         {
-            var userProjectAdministration = TestHelper.GetUserProjectAdministration(Guid.NewGuid());
+            var userProjectAdministration = TestHelper.GetUserProjectAdministration(TestHelper.GetFoo());
 
             var project = new Project("Test", Guid.NewGuid(), startDate: DateTime.Now, endDate: DateTime.Now.AddDays(10));
             project = userProjectAdministration.AddProject(project);
 
-            return new ProjectInvitation(project, string.Empty, Guid.NewGuid());
+            var projectInvitation = new ProjectInvitation(project, string.Empty);
+            projectInvitation.SetUserId(Guid.NewGuid());
+            projectInvitation.SetProject(project);
+            return projectInvitation;
         }
 
         [Fact]

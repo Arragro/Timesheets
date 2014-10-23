@@ -9,7 +9,7 @@ using Timesheets.DataLayer.Models;
 
 namespace Timesheets.BusinessLayer.Domain
 {
-    public class UserProjectAdministration
+    public class UserProjects
     {
         public const string PROJECT_HAS_NOT_BEEN_SAVED = "You cannot save a project that has not been saved";
         public const string USER_IS_NOT_AUTHORISED = "User is not authorised to modify the project";
@@ -19,18 +19,18 @@ namespace Timesheets.BusinessLayer.Domain
             get
             {
                 const string UserProjects = "UserTimesheetEntries:UserProjects:{0}";
-                return string.Format(UserProjects, UserId);
+                return string.Format(UserProjects, User.Id);
             }
         }
 
-        public Guid UserId { get; private set; }
+        public IUser<Guid> User { get; private set; }
 
         private readonly ProjectService _projectService;
         private readonly ProjectInvitationService _projectInvitationService;
         private readonly CacheSettings _cacheSettings;
 
-        public UserProjectAdministration(
-            Guid userId,
+        public UserProjects(
+            IUser<Guid> user,
             CacheSettings cacheSettings,
             ProjectService projectService,
             ProjectInvitationService projectInvitationService)
@@ -39,7 +39,7 @@ namespace Timesheets.BusinessLayer.Domain
             if (projectService == null) throw new ArgumentNullException("projectService");
             if (projectInvitationService == null) throw new ArgumentNullException("projectInvitationService");
 
-            UserId = userId;
+            User = user;
             _cacheSettings = cacheSettings;
             _projectService = projectService;
             _projectInvitationService = projectInvitationService;
@@ -66,14 +66,14 @@ namespace Timesheets.BusinessLayer.Domain
 
         private Project EnsureOwnerUserIdIsTheModifyingUser(Project project)
         {
-            project.ChangeProjectOwner(UserId);
+            project.ChangeProjectOwner(User.Id);
             return project;
         }
 
         private void IsUserAuthorisedForAdministration(Project project)
         {
             var existingProject = _projectService.Find(project.ProjectId);
-            if (existingProject != null && existingProject.OwnerUserId != UserId)
+            if (existingProject != null && existingProject.OwnerUserId != User.Id)
             {
                 var rulesException = new RulesException<Project>();
                 rulesException.ErrorForModel(USER_IS_NOT_AUTHORISED);
@@ -88,7 +88,7 @@ namespace Timesheets.BusinessLayer.Domain
             IsUserAuthorisedForAdministration(project);
             project.ChangeProjectOwner(newOwnerUserId);
 
-            _projectService.InsertOrUpdate(project, UserId);
+            _projectService.InsertOrUpdate(project, User.Id);
             _projectService.SaveChanges();
 
             ClearCache();
@@ -100,7 +100,7 @@ namespace Timesheets.BusinessLayer.Domain
             EnsureProjectIsAlreadySaved(project);
             IsUserAuthorisedForAdministration(project);
             project = EnsureOwnerUserIdIsTheModifyingUser(project);
-            project = _projectService.ValidateAndInsertOrUpdate(project, UserId);
+            project = _projectService.ValidateAndInsertOrUpdate(project, User.Id);
             _projectService.SaveChanges();
             ClearCache();
             return project;
@@ -109,7 +109,7 @@ namespace Timesheets.BusinessLayer.Domain
         public Project AddProject(Project project)
         {
             project = EnsureOwnerUserIdIsTheModifyingUser(project);
-            project = _projectService.ValidateAndInsertOrUpdate(project, UserId);
+            project = _projectService.ValidateAndInsertOrUpdate(project, User.Id);
             _projectService.SaveChanges();
             ClearCache();
             return project;
@@ -119,23 +119,8 @@ namespace Timesheets.BusinessLayer.Domain
         {
             return Cache.Get(
                 UserProjectsKey,
-                () => _projectService.GetUserProjects(UserId),
+                () => _projectService.GetUserProjects(User.Id),
                 _cacheSettings);
-        }
-
-        public ProjectInvitation InviteUserToProject(
-            Project project, string emailAddress, IUser<Guid> user = null)
-        {
-            var userId = user != null ? (Guid?)user.Id : null;
-            var projectInvitation = new ProjectInvitation(project, emailAddress, userId);
-            _projectInvitationService.ValidateAndInsertOrUpdate(projectInvitation, UserId);
-            _projectInvitationService.SaveChanges();
-            return projectInvitation;
-        }
-
-        public IEnumerable<ProjectInvitation> GetProjectInvitations(Project project)
-        {
-            return _projectInvitationService.GetProjectInvitations(project);
         }
     }
 }

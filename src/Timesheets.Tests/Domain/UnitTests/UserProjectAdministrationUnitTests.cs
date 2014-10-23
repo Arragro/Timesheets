@@ -13,7 +13,7 @@ namespace Timesheets.Tests.Domain.UnitTests
     public class UserProjectAdministrationUnitTests
     {
         private void LoadProjects(
-            UserProjectAdministration userProjectAdministration,
+            UserProjects userProjectAdministration,
             Guid ownerUserId,
             int numberOfProjects = 2)
         {
@@ -32,57 +32,10 @@ namespace Timesheets.Tests.Domain.UnitTests
         }
 
         [Fact]
-        public void UserProjectAdministrion_instantiation_throws_error_when_null_services_supplied()
-        {
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                {
-                    try
-                    {
-                        new UserProjectAdministration(Guid.NewGuid(), null, null, null);
-                    }
-                    catch (ArgumentNullException ex)
-                    {
-                        Assert.Equal(ex.ParamName, "cacheSettings");
-                        throw ex;
-                    }
-                });
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                {
-                    try
-                    {
-                        new UserProjectAdministration(
-                            Guid.NewGuid(), TestHelper.GetCacheSettings(), null, null);
-                    }
-                    catch (ArgumentNullException ex)
-                    {
-                        Assert.Equal(ex.ParamName, "projectService");
-                        throw ex;
-                    }
-                });
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                {
-                    try
-                    {
-                        new UserProjectAdministration(
-                            Guid.NewGuid(), TestHelper.GetCacheSettings(),
-                            TestHelper.UnityContainer(false).Resolve<ProjectService>(), null);
-                    }
-                    catch (ArgumentNullException ex)
-                    {
-                        Assert.Equal(ex.ParamName, "projectInvitationService");
-                        throw ex;
-                    }
-                });
-        }
-
-        [Fact]
         public void Project_update_fails_when_project_has_not_been_saved()
         {
             var fooUser = TestHelper.GetFoo();
-            var userProjectAdministration = TestHelper.GetUserProjectAdministration(fooUser.Id);
+            var userProjectAdministration = TestHelper.GetUserProjectAdministration(TestHelper.GetFoo());
 
             Assert.Throws<RulesException<Project>>(
                 () =>
@@ -94,7 +47,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                     }
                     catch (RulesException ex)
                     {
-                        Assert.Equal(ex.Errors[0].Message, UserProjectAdministration.PROJECT_HAS_NOT_BEEN_SAVED);
+                        Assert.Equal(ex.Errors[0].Message, UserProjects.PROJECT_HAS_NOT_BEEN_SAVED);
                         throw ex;
                     }
                 });
@@ -107,8 +60,8 @@ namespace Timesheets.Tests.Domain.UnitTests
 
             var unityContainer = InMemoryUnityContainer.GetInMemoryContainer();
             var projectService = unityContainer.Resolve<ProjectService>();
-            var userProjectAdministration = unityContainer.Resolve<UserProjectAdministration>(
-                new ParameterOverride("userId", fooUser.Id),
+            var userProjectAdministration = unityContainer.Resolve<UserProjects>(
+                new ParameterOverride("user", fooUser),
                 new ParameterOverride("projectService", projectService));
 
             Assert.Throws<RulesException<Project>>(
@@ -120,15 +73,15 @@ namespace Timesheets.Tests.Domain.UnitTests
                             new Project("Test", Guid.NewGuid()));
 
                         var tempUserProjectAdministration =
-                            unityContainer.Resolve<UserProjectAdministration>(
-                                new ParameterOverride("userId", Guid.NewGuid()),
+                            unityContainer.Resolve<UserProjects>(
+                                new ParameterOverride("user", TestHelper.GetBar()),
                                 new ParameterOverride("projectService", projectService));
 
                         tempUserProjectAdministration.UpdateProject(project);
                     }
                     catch (RulesException ex)
                     {
-                        Assert.Equal(ex.Errors[0].Message, UserProjectAdministration.USER_IS_NOT_AUTHORISED);
+                        Assert.Equal(ex.Errors[0].Message, UserProjects.USER_IS_NOT_AUTHORISED);
                         throw ex;
                     }
                 });
@@ -138,7 +91,7 @@ namespace Timesheets.Tests.Domain.UnitTests
         public void Project_OwnerUserId_is_same_as_creator()
         {
             var fooUser = TestHelper.GetFoo();
-            var userProjectAdministration = TestHelper.GetUserProjectAdministration(fooUser.Id);
+            var userProjectAdministration = TestHelper.GetUserProjectAdministration(fooUser);
 
             var project = userProjectAdministration.AddProject(
                 new Project(
@@ -156,8 +109,8 @@ namespace Timesheets.Tests.Domain.UnitTests
 
             var unityContainer = InMemoryUnityContainer.GetInMemoryContainer();
             var projectService = unityContainer.Resolve<ProjectService>();
-            var userProjectAdministration = unityContainer.Resolve<UserProjectAdministration>(
-                new ParameterOverride("userId", fooUser.Id),
+            var userProjectAdministration = unityContainer.Resolve<UserProjects>(
+                new ParameterOverride("user", fooUser),
                 new ParameterOverride("projectService", projectService));
 
             Assert.Throws<RulesException<Project>>(
@@ -171,8 +124,8 @@ namespace Timesheets.Tests.Domain.UnitTests
                                 startDate: DateTime.Now,
                                 endDate: DateTime.Now.AddDays(1)));
 
-                        var tempUserProjectAdministration = unityContainer.Resolve<UserProjectAdministration>(
-                            new ParameterOverride("userId", Guid.NewGuid()),
+                        var tempUserProjectAdministration = unityContainer.Resolve<UserProjects>(
+                            new ParameterOverride("user", TestHelper.GetBar()),
                             new ParameterOverride("projectService", projectService));
 
                         tempUserProjectAdministration.TransferProjectOwnership(
@@ -180,7 +133,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                     }
                     catch (RulesException ex)
                     {
-                        Assert.Equal(ex.Errors[0].Message, UserProjectAdministration.USER_IS_NOT_AUTHORISED);
+                        Assert.Equal(ex.Errors[0].Message, UserProjects.USER_IS_NOT_AUTHORISED);
                         throw ex;
                     }
                 });
@@ -190,7 +143,7 @@ namespace Timesheets.Tests.Domain.UnitTests
         public void Project_transfer_ownership_succeeds_when_owner_initiates()
         {
             var fooUser = TestHelper.GetFoo();
-            var userProjectAdministration = TestHelper.GetUserProjectAdministration(fooUser.Id);
+            var userProjectAdministration = TestHelper.GetUserProjectAdministration(TestHelper.GetFoo());
 
             var project = userProjectAdministration.AddProject(
                 new Project(
@@ -209,7 +162,7 @@ namespace Timesheets.Tests.Domain.UnitTests
         public void get_User_Projects()
         {
             var fooUser = TestHelper.GetFoo();
-            var userProjectAdministration = TestHelper.GetUserProjectAdministration(fooUser.Id);
+            var userProjectAdministration = TestHelper.GetUserProjectAdministration(TestHelper.GetFoo());
 
             LoadProjects(userProjectAdministration, Guid.NewGuid());
 
@@ -221,51 +174,16 @@ namespace Timesheets.Tests.Domain.UnitTests
         public void get_User_Projects_only_returns_that_Users()
         {
             var fooUser = TestHelper.GetFoo();
-            var fooUserProjectAdministration = TestHelper.GetUserProjectAdministration(fooUser.Id);
+            var fooUserProjectAdministration = TestHelper.GetUserProjectAdministration(TestHelper.GetFoo());
 
             var barUser = TestHelper.GetBar();
-            var barUserProjectAdministration = TestHelper.GetUserProjectAdministration(barUser.Id);
+            var barUserProjectAdministration = TestHelper.GetUserProjectAdministration(TestHelper.GetFoo());
 
             LoadProjects(fooUserProjectAdministration, fooUser.Id);
             LoadProjects(barUserProjectAdministration, fooUser.Id);
 
             var userProjects = barUserProjectAdministration.GetUserProjects();
             Assert.Equal(2, userProjects.Count());
-        }
-
-        [Fact]
-        public void UserProjectAdministration_Invite_User_to_Project()
-        {
-            var user = TestHelper.GetFoo();
-            var userProjectAdministration = TestHelper.GetUserProjectAdministration(user.Id);
-
-            LoadProjects(userProjectAdministration, user.Id, 1);
-            var project = userProjectAdministration.GetUserProjects().First();
-
-            var projectInvitation = userProjectAdministration.InviteUserToProject(project, TestHelper.VALID_EMAIL_ADDRESS, user);
-
-            Assert.NotNull(projectInvitation);
-            Assert.NotEqual(default(Guid), projectInvitation.ProjectInvitationId);
-        }
-
-        [Fact]
-        public void UserProjectAdministration_returns_Invitations_for_Project()
-        {
-            var user = TestHelper.GetFoo();
-            var userProjectAdministration = TestHelper.GetUserProjectAdministration(user.Id);
-
-            LoadProjects(userProjectAdministration, Guid.NewGuid(), 2);
-            var project1 = userProjectAdministration.GetUserProjects().First();
-            var project2 = userProjectAdministration.GetUserProjects().Last();
-
-            var project1Invitation = userProjectAdministration.InviteUserToProject(project1, TestHelper.VALID_EMAIL_ADDRESS, user);
-            var project2Invitation = userProjectAdministration.InviteUserToProject(project2, TestHelper.VALID_EMAIL_ADDRESS, user);
-
-            var project2Invitations = userProjectAdministration.GetProjectInvitations(project2);
-
-            Assert.NotNull(project2Invitations);
-            Assert.Equal(1, project2Invitations.Count());
-            Assert.Equal(project2Invitation.ProjectInvitationId, project2Invitations.First().ProjectInvitationId);
         }
     }
 }

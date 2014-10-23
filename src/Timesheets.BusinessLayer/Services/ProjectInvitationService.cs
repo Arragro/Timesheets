@@ -1,4 +1,5 @@
 ﻿using Arragro.Common.ServiceBase;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace Timesheets.BusinessLayer.Services
     public class ProjectInvitationService : AuditableService<IProjectInvitationRepository, ProjectInvitation, Guid, Guid>
     {
         public const string PROJECTID_NOT_SET = "ProjectId is not set.";
-        public const string USER_IS_NOT_NULL_NOT_SET = "UserId is not null and is not set.";
+        public const string USER_IS_NOT_NULL_NOT_SET = "Project Invitation is set and UserId is not null and is not set.";
         public const string INVITATIONCODE_IS_NOT_SET = "Invitation Code is not set.";
         public const string INVITATION_ACCEPTED_BEFORE_SENT = "Invitation has been accepted before it was sent.";
         public const string INVITATION_ALREADY_EXISTS_FOR_THIS_USERID = "For this Project there is already an invitation for the User.";
@@ -31,9 +32,10 @@ namespace Timesheets.BusinessLayer.Services
 
         private void EnsureUserIdIsSet(ProjectInvitation projectInvitation)
         {
-            if (projectInvitation.UserId.HasValue &&
-                projectInvitation.UserId.Value == default(Guid))
-                RulesException.ErrorFor(x => x.UserId, USER_IS_NOT_NULL_NOT_SET);
+            if (projectInvitation.InvitationAccepted.HasValue)
+                if (projectInvitation.UserId.HasValue &&
+                    projectInvitation.UserId.Value == default(Guid))
+                    RulesException.ErrorFor(x => x.UserId, USER_IS_NOT_NULL_NOT_SET);
         }
 
         private void EnsureInvitationCodeIsSet(ProjectInvitation projectInvitation)
@@ -84,14 +86,29 @@ namespace Timesheets.BusinessLayer.Services
         public override ProjectInvitation InsertOrUpdate(ProjectInvitation model, Guid userId)
         {
             var add = default(Guid) == model.ProjectInvitationId;
-            if (add) model.SetProjectInvitationId();
+            if (add)
+            {
+                model.SetProjectInvitationId();
+            }
             AddOrUpdateAudit(model, userId, add);
             return Repository.InsertOrUpdate(model, add);
         }
 
         public IEnumerable<ProjectInvitation> GetProjectInvitations(Project project)
         {
-            return Repository.All().Where(i => i.ProjectId == project.ProjectId).ToList();
+            var projectInvitations = Repository.All().Where(i => i.ProjectId == project.ProjectId).ToList();
+            foreach (var projectInvitation in projectInvitations) projectInvitation.SetProject(project);
+            return projectInvitations;
+        }
+
+        public IEnumerable<ProjectInvitation> GetProjectInvitations(Guid userId)
+        {
+            return Repository.All().Where(i => i.UserId == userId).ToList();
+        }
+
+        public IEnumerable<ProjectInvitation> GetProjectInvitations(string emailAddress)
+        {
+            return Repository.All().Where(u => u.EmailAddress == emailAddress).ToList();
         }
     }
 }

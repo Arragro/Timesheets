@@ -76,5 +76,10 @@ namespace Timesheets.BusinessLayer.Services
                 .Where(p => p.OwnerUserId == userId)
                 .ToList();
         }
+
+        public Project GetProject(Guid projectId)
+        {
+            return Repository.Find(projectId);
+        }
     }
 }

@@ -46,16 +46,16 @@ namespace Timesheets.Tests
             return UnityContainer().Resolve<ProjectContributorService>();
         }
 
-        public static UserTimesheetEntries GetUserTimesheetEntries(Guid userId)
+        public static UserTimesheetEntries GetUserTimesheetEntries(IUser<Guid> user)
         {
             return UnityContainer(false).Resolve<UserTimesheetEntries>(
-                new ParameterOverride("userId", userId));
+                new ParameterOverride("user", user));
         }
 
-        public static UserProjectAdministration GetUserProjectAdministration(Guid userId)
+        public static UserProjects GetUserProjectAdministration(IUser<Guid> user)
         {
-            return UnityContainer(false).Resolve<UserProjectAdministration>(
-                new ParameterOverride("userId", userId));
+            return UnityContainer(false).Resolve<UserProjects>(
+                new ParameterOverride("user", user));
         }
 
         public static CacheSettings GetCacheSettings()

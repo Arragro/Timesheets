@@ -25,21 +25,25 @@ namespace Timesheets.DataLayer.Models
 
         public ProjectInvitation(
             Project project,
-            string emailAddress,
-            Guid? userId = null)
+            string emailAddress)
         {
             if (project == null) throw new ArgumentNullException("project", "The Project supplied is null.");
             ProjectId = project.ProjectId;
-            UserId = userId;
             EmailAddress = emailAddress;
             InvitationCode = Guid.NewGuid();
-            Project = project;
+            //Project = project;
         }
 
         public void SetProjectInvitationId()
         {
             if (ProjectInvitationId != default(Guid)) throw new Exception("The ProjectId is already set.");
             ProjectInvitationId = Guid.NewGuid();
+        }
+
+        public void SetProject(Project project)
+        {
+            if (project == null) throw new ArgumentNullException("project");
+            Project = project;
         }
 
         public void SetProjectInvitationSent(bool invitationSent)
@@ -51,6 +55,13 @@ namespace Timesheets.DataLayer.Models
         {
             if (!InvitationSent) throw new Exception("You cannot accept an invitation if it hasn't been sent.");
             InvitationAccepted = invitationAccepted;
+        }
+
+        public void SetUserId(Guid userId)
+        {
+            if (UserId.HasValue) throw new Exception("The UserId is already set.");
+            if (userId == default(Guid)) throw new ArgumentException("You have supplied an empty UserId.", "userId");
+            UserId = userId;
         }
     }
 }

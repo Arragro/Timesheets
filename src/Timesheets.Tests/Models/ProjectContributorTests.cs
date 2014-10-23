@@ -25,31 +25,27 @@ namespace Timesheets.Tests.Models
         }
 
         [Fact]
-        public void ProjectContributor_fails_when_a_null_or_default_userId_is_supplied()
+        public void ProjectContributor_fails_when_a_null_Project_is_supplied()
         {
             Assert.Throws<ArgumentNullException>(
                 () =>
                 {
                     try
                     {
-                        new ProjectContributor(new ProjectInvitation(new Project("Test", Guid.NewGuid()), string.Empty, new Guid()));
+                        var project = new Project("Test", Guid.NewGuid());
+                        var projectInvitation =
+                                new ProjectInvitation(
+                                    project, string.Empty);
+                        projectInvitation.SetUserId(Guid.NewGuid());
+                        projectInvitation.SetProject(project);
+
+                        var projectContributor =
+                            new ProjectContributor(projectInvitation);
+                        projectContributor.SetProject(null);
                     }
                     catch (ArgumentNullException ex)
                     {
-                        Assert.Equal("projectInvitation.UserId", ex.ParamName);
-                        throw;
-                    }
-                });
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                {
-                    try
-                    {
-                        new ProjectContributor(new ProjectInvitation(new Project("Test", Guid.NewGuid()), string.Empty, null));
-                    }
-                    catch (ArgumentNullException ex)
-                    {
-                        Assert.Equal("projectInvitation.UserId", ex.ParamName);
+                        Assert.Equal("project", ex.ParamName);
                         throw;
                     }
                 });

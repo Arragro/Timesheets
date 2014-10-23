@@ -1,5 +1,6 @@
 ﻿using Arragro.Common.ServiceBase;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Timesheets.DataLayer.Interfaces;
 using Timesheets.DataLayer.Models;
@@ -53,6 +54,14 @@ namespace Timesheets.BusinessLayer.Services
             ValidAgainstProjectStartEndDates(model);
 
             if (RulesException.Errors.Any()) throw RulesException;
+        }
+
+        public IEnumerable<Project> GetProjects(Guid userId)
+        {
+            return Repository.All()
+                    .Where(c => c.UserId == userId)
+                    .Select(c => c.Project)
+                    .ToList();
         }
     }
 }

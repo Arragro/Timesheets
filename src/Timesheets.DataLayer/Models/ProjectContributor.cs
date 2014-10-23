@@ -32,7 +32,7 @@ namespace Timesheets.DataLayer.Models
             if (!projectInvitation.UserId.HasValue ||
                 (projectInvitation.UserId.HasValue && projectInvitation.UserId.Value == default(Guid)))
                 throw new ArgumentNullException("projectInvitation.UserId", "The Project Invitation does not have a UserId");
-            ProjectId = projectInvitation.Project.ProjectId;
+            ProjectId = projectInvitation.ProjectId;
             UserId = projectInvitation.UserId.Value;
             ContributorRole = ContributorRole.User;
             WeeklyContributorHoursLimit = null;
@@ -43,6 +43,12 @@ namespace Timesheets.DataLayer.Models
             HourlyRate = null;
 
             Project = projectInvitation.Project;
+        }
+
+        public void SetProject(Project project)
+        {
+            if (project == null) throw new ArgumentNullException("project");
+            Project = project;
         }
 
         public void SetProjectContributorId()

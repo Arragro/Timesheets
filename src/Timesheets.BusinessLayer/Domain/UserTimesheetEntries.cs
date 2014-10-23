@@ -1,4 +1,5 @@
 ﻿using Arragro.Common.CacheProvider;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using Timesheets.BusinessLayer.Services;
@@ -13,7 +14,7 @@ namespace Timesheets.BusinessLayer.Domain
             get
             {
                 const string LastMonths = "UserTimesheetEntries:LastMonths:{0}";
-                return string.Format(LastMonths, UserId);
+                return string.Format(LastMonths, User.Id);
             }
         }
 
@@ -22,20 +23,20 @@ namespace Timesheets.BusinessLayer.Domain
             Cache.RemoveFromCache(LastMonthsKey, false);
         }
 
-        public Guid UserId { get; private set; }
+        public IUser<Guid> User { get; private set; }
         private readonly CacheSettings _cacheSettings;
 
         private readonly TimesheetEntryService _timesheetEntryService;
 
         public UserTimesheetEntries(
-            Guid userId,
+            IUser<Guid> user,
             CacheSettings cacheSettings,
             TimesheetEntryService timesheetEntryService)
         {
             if (cacheSettings == null) throw new ArgumentNullException("cacheSettings");
             if (timesheetEntryService == null) throw new ArgumentNullException("timesheetEntryService");
 
-            UserId = userId;
+            User = user;
             _cacheSettings = cacheSettings;
             _timesheetEntryService = timesheetEntryService;
         }
@@ -44,21 +45,21 @@ namespace Timesheets.BusinessLayer.Domain
         {
             return Cache.Get(
                 LastMonthsKey,
-                () => _timesheetEntryService.GetLastMonthsTimesheets(UserId),
+                () => _timesheetEntryService.GetLastMonthsTimesheets(User.Id),
                 _cacheSettings);
         }
 
         public IEnumerable<TimesheetEntry> GetRangeOfTimesheetEntries(
             DateTime fromDate, DateTime toDate)
         {
-            return _timesheetEntryService.GetTimesheetsByRange(UserId, fromDate, toDate);
+            return _timesheetEntryService.GetTimesheetsByRange(User.Id, fromDate, toDate);
         }
 
         public TimesheetEntry AddTimesheetEntry(
             TimesheetEntry timesheetEntry)
         {
             timesheetEntry =
-                _timesheetEntryService.ValidateAndInsertOrUpdate(timesheetEntry, UserId);
+                _timesheetEntryService.ValidateAndInsertOrUpdate(timesheetEntry, User.Id);
             _timesheetEntryService.SaveChanges();
             ClearCache();
             return timesheetEntry;

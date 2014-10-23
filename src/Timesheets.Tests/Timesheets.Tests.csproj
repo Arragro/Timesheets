@@ -93,6 +93,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\UnitTests\UserInvitationsTests.cs" />
     <Compile Include="Domain\UnitTests\UserProjectAdministrationUnitTests.cs" />
     <Compile Include="Domain\UnitTests\UserTimesheetEntriesUnitTests.cs" />
     <Compile Include="InMemoryIdentity\MemoryUser.cs">
