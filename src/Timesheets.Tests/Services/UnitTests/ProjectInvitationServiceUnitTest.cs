@@ -10,7 +10,7 @@ namespace Timesheets.Tests.Services.UnitTests
     public class projectInvitationServiceUnitTest
     {
         [Fact]
-        public void projectInvitationService_validates_model_attributes()
+        public void ProjectInvitationService_validates_model_attributes()
         {
             var projectInvitationService = TestHelper.GetProjectInvitationService();
 
@@ -162,6 +162,25 @@ namespace Timesheets.Tests.Services.UnitTests
                         Assert.Equal(1, ex.Errors.Count);
                         Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == ProjectInvitationService.INVITATION_ALREADY_EXISTS_FOR_THIS_EMAILADDRESS));
                         throw ex;
+                    }
+                });
+        }
+
+        [Fact]
+        public void ProjectInvitationService_trhows_when_ProjectInvitationCode_does_not_exist()
+        {
+            Assert.Throws<ApplicationException>(
+                () =>
+                {
+                    try
+                    {
+                        var projectInvitationService = TestHelper.GetProjectInvitationService();
+                        projectInvitationService.GetProjectInvitationViaInvitationCode(Guid.NewGuid());
+                    }
+                    catch (ApplicationException ex)
+                    {
+                        Assert.Equal(ProjectInvitationService.INVITATIONCODE_DOES_NOT_EXIST, ex.Message);
+                        throw;
                     }
                 });
         }

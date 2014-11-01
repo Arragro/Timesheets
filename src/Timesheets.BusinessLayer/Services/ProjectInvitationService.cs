@@ -16,6 +16,7 @@ namespace Timesheets.BusinessLayer.Services
         public const string INVITATION_ACCEPTED_BEFORE_SENT = "Invitation has been accepted before it was sent.";
         public const string INVITATION_ALREADY_EXISTS_FOR_THIS_USERID = "For this Project there is already an invitation for the User.";
         public const string INVITATION_ALREADY_EXISTS_FOR_THIS_EMAILADDRESS = "For this Project there is already an invitation for the Email Address.";
+        public const string INVITATIONCODE_DOES_NOT_EXIST = "There is no Project Invitation for that invitation code.";
 
         public ProjectInvitationService(
             IProjectInvitationRepository projectInvitationRepository)
@@ -104,6 +105,14 @@ namespace Timesheets.BusinessLayer.Services
         public IEnumerable<ProjectInvitation> GetProjectInvitations(string emailAddress)
         {
             return Repository.All().Where(u => u.EmailAddress == emailAddress).ToList();
+        }
+
+        public ProjectInvitation GetProjectInvitationViaInvitationCode(Guid invitationCode)
+        {
+            var projectInvitation = Repository.All().SingleOrDefault(i => i.InvitationCode == invitationCode);
+            if (projectInvitation == null)
+                throw new ApplicationException(INVITATIONCODE_DOES_NOT_EXIST);
+            return projectInvitation;
         }
     }
 }
