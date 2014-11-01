@@ -11,7 +11,7 @@ namespace Timesheets.Tests.Services.UnitTests
     {
         private ProjectInvitation GetProjectInvitation()
         {
-            var userProjectAdministration = TestHelper.GetUserProjectAdministration(TestHelper.GetFoo());
+            var userProjectAdministration = TestHelper.GetUserProjects(TestHelper.GetFoo());
 
             var project = new Project("Test", Guid.NewGuid(), startDate: DateTime.Now, endDate: DateTime.Now.AddDays(10));
             project = userProjectAdministration.AddProject(project);

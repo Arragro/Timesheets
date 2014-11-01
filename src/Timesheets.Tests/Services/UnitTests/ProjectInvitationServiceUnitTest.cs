@@ -99,7 +99,7 @@ namespace Timesheets.Tests.Services.UnitTests
         [Fact]
         public void ProjectInvitionService_UserId_already_invited()
         {
-            var userProjectAdministration = TestHelper.GetUserProjectAdministration(TestHelper.GetFoo());
+            var userProjectAdministration = TestHelper.GetUserProjects(TestHelper.GetFoo());
             var projectInvitationService = TestHelper.GetProjectInvitationService();
 
             var project = new Project("Test", Guid.NewGuid());
@@ -138,7 +138,7 @@ namespace Timesheets.Tests.Services.UnitTests
         [Fact]
         public void ProjectInvitionService_EmailAddress_already_invited()
         {
-            var userProjectAdministration = TestHelper.GetUserProjectAdministration(TestHelper.GetFoo());
+            var userProjectAdministration = TestHelper.GetUserProjects(TestHelper.GetFoo());
             var projectInvitationService = TestHelper.GetProjectInvitationService();
 
             var project = new Project("Test", Guid.NewGuid());

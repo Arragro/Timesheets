@@ -52,9 +52,15 @@ namespace Timesheets.Tests
                 new ParameterOverride("user", user));
         }
 
-        public static UserProjects GetUserProjectAdministration(IUser<Guid> user)
+        public static UserProjects GetUserProjects(IUser<Guid> user)
         {
             return UnityContainer(false).Resolve<UserProjects>(
+                new ParameterOverride("user", user));
+        }
+
+        public static UserProjectInvitations GetUserProjectInvitations(IUser<Guid> user)
+        {
+            return UnityContainer(false).Resolve<UserProjectInvitations>(
                 new ParameterOverride("user", user));
         }
 

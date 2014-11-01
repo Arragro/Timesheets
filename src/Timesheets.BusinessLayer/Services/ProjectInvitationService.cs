@@ -101,11 +101,6 @@ namespace Timesheets.BusinessLayer.Services
             return projectInvitations;
         }
 
-        public IEnumerable<ProjectInvitation> GetProjectInvitations(Guid userId)
-        {
-            return Repository.All().Where(i => i.UserId == userId).ToList();
-        }
-
         public IEnumerable<ProjectInvitation> GetProjectInvitations(string emailAddress)
         {
             return Repository.All().Where(u => u.EmailAddress == emailAddress).ToList();

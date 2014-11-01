@@ -35,7 +35,7 @@ namespace Timesheets.Tests.Domain.UnitTests
         public void Project_update_fails_when_project_has_not_been_saved()
         {
             var fooUser = TestHelper.GetFoo();
-            var userProjectAdministration = TestHelper.GetUserProjectAdministration(TestHelper.GetFoo());
+            var userProjectAdministration = TestHelper.GetUserProjects(TestHelper.GetFoo());
 
             Assert.Throws<RulesException<Project>>(
                 () =>
@@ -91,7 +91,7 @@ namespace Timesheets.Tests.Domain.UnitTests
         public void Project_OwnerUserId_is_same_as_creator()
         {
             var fooUser = TestHelper.GetFoo();
-            var userProjectAdministration = TestHelper.GetUserProjectAdministration(fooUser);
+            var userProjectAdministration = TestHelper.GetUserProjects(fooUser);
 
             var project = userProjectAdministration.AddProject(
                 new Project(
@@ -143,7 +143,7 @@ namespace Timesheets.Tests.Domain.UnitTests
         public void Project_transfer_ownership_succeeds_when_owner_initiates()
         {
             var fooUser = TestHelper.GetFoo();
-            var userProjectAdministration = TestHelper.GetUserProjectAdministration(TestHelper.GetFoo());
+            var userProjectAdministration = TestHelper.GetUserProjects(TestHelper.GetFoo());
 
             var project = userProjectAdministration.AddProject(
                 new Project(
@@ -162,7 +162,7 @@ namespace Timesheets.Tests.Domain.UnitTests
         public void get_User_Projects()
         {
             var fooUser = TestHelper.GetFoo();
-            var userProjectAdministration = TestHelper.GetUserProjectAdministration(TestHelper.GetFoo());
+            var userProjectAdministration = TestHelper.GetUserProjects(TestHelper.GetFoo());
 
             LoadProjects(userProjectAdministration, Guid.NewGuid());
 
@@ -174,10 +174,10 @@ namespace Timesheets.Tests.Domain.UnitTests
         public void get_User_Projects_only_returns_that_Users()
         {
             var fooUser = TestHelper.GetFoo();
-            var fooUserProjectAdministration = TestHelper.GetUserProjectAdministration(TestHelper.GetFoo());
+            var fooUserProjectAdministration = TestHelper.GetUserProjects(TestHelper.GetFoo());
 
             var barUser = TestHelper.GetBar();
-            var barUserProjectAdministration = TestHelper.GetUserProjectAdministration(TestHelper.GetFoo());
+            var barUserProjectAdministration = TestHelper.GetUserProjects(TestHelper.GetFoo());
 
             LoadProjects(fooUserProjectAdministration, fooUser.Id);
             LoadProjects(barUserProjectAdministration, fooUser.Id);

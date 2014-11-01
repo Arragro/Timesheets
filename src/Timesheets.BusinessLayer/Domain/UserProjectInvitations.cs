@@ -7,7 +7,7 @@ using Timesheets.DataLayer.Models;
 
 namespace Timesheets.BusinessLayer.Domain
 {
-    public class UserInvitations
+    public class UserProjectInvitations
     {
         public IUser<Guid> User { get; private set; }
 
@@ -16,14 +16,14 @@ namespace Timesheets.BusinessLayer.Domain
         private readonly ProjectInvitationService _projectInvitationService;
         private readonly ProjectContributorService _projectContributorService;
 
-        public UserInvitations(
-            IUser<Guid> userId,
+        public UserProjectInvitations(
+            IUser<Guid> user,
             CacheSettings cacheSettings,
             ProjectService projectService,
             ProjectInvitationService projectInvitationService,
             ProjectContributorService projectContributionService)
         {
-            User = userId;
+            User = user;
             _cacheSettings = cacheSettings;
             _projectService = projectService;
             _projectInvitationService = projectInvitationService;
@@ -42,11 +42,6 @@ namespace Timesheets.BusinessLayer.Domain
         public IEnumerable<ProjectInvitation> GetProjectInvitations(Project project)
         {
             return _projectInvitationService.GetProjectInvitations(project);
-        }
-
-        public IEnumerable<ProjectInvitation> GetProjectInvitations()
-        {
-            return LoadProjects(_projectInvitationService.GetProjectInvitations(User.Id));
         }
 
         public ProjectInvitation InviteUserToProject(

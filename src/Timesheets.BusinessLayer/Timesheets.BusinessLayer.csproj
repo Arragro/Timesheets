@@ -57,7 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Domain\UserInvitations.cs" />
+    <Compile Include="Domain\UserProjectInvitations.cs" />
     <Compile Include="Domain\UserProjects.cs" />
     <Compile Include="Domain\UserTimesheetEntries.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
