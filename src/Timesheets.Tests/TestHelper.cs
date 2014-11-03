@@ -46,6 +46,11 @@ namespace Timesheets.Tests
             return UnityContainer().Resolve<ProjectContributorService>();
         }
 
+        public static BackEndAdministration GetBackEndAdministration()
+        {
+            return UnityContainer(false).Resolve<BackEndAdministration>();
+        }
+
         public static UserTimesheetEntries GetUserTimesheetEntries(IUser<Guid> user)
         {
             return UnityContainer(false).Resolve<UserTimesheetEntries>(

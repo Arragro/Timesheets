@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E67A67
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Timesheets.Persistance.EF6", "Timesheets.Persistance.EF6\Timesheets.Persistance.EF6.csproj", "{6C20AF03-B889-41C7-8700-71C3FB621FD6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arragro.Common", "..\..\Arragro\src\Arragro.Common\Arragro.Common.csproj", "{DF7F6387-5D1A-4E62-B136-0C85E4175E1B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,12 @@ Global
 		{6C20AF03-B889-41C7-8700-71C3FB621FD6}.IntegrationTests|Any CPU.Build.0 = IntegrationTests|Any CPU
 		{6C20AF03-B889-41C7-8700-71C3FB621FD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C20AF03-B889-41C7-8700-71C3FB621FD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF7F6387-5D1A-4E62-B136-0C85E4175E1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF7F6387-5D1A-4E62-B136-0C85E4175E1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF7F6387-5D1A-4E62-B136-0C85E4175E1B}.IntegrationTests|Any CPU.ActiveCfg = Release|Any CPU
+		{DF7F6387-5D1A-4E62-B136-0C85E4175E1B}.IntegrationTests|Any CPU.Build.0 = Release|Any CPU
+		{DF7F6387-5D1A-4E62-B136-0C85E4175E1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF7F6387-5D1A-4E62-B136-0C85E4175E1B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

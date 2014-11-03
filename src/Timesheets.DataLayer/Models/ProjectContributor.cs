@@ -5,6 +5,7 @@ using Timesheets.DataLayer.Enums;
 
 namespace Timesheets.DataLayer.Models
 {
+    [Serializable]
     public class ProjectContributor : Auditable<Guid>
     {
         public Guid ProjectContributorId { get; private set; }
@@ -43,6 +44,11 @@ namespace Timesheets.DataLayer.Models
             HourlyRate = null;
 
             Project = projectInvitation.Project;
+        }
+
+        public void ClearProjectForService()
+        {
+            Project = null;
         }
 
         public void SetProject(Project project)

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Timesheets.DataLayer.Models
 {
+    [Serializable]
     public class TimesheetEntry : Auditable<Guid>
     {
         public Guid TimesheetEntryId { get; private set; }

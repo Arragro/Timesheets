@@ -1,4 +1,5 @@
-﻿using Arragro.Common.ServiceBase;
+﻿using Arragro.Common.Helpers;
+using Arragro.Common.ServiceBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace Timesheets.BusinessLayer.Services
         public const string DATES_BOTH_MUST_BE_ENTERED_OR_NONE = "A ProjectContributor cannot have either a start or end date, they must have both or none.";
         public const string END_DATE_MUST_BE_MORE_THAN_OR_EQUAL_TO_START_DATE = "The End Date must be greater or equal to the Start Date.";
         public const string CONTRIBUTOR_MUST_HAVE_DATES_THAT_ARE_WITHIN_THE_PROJECT_DATES = "The Contributor's Start and End dates must be within the Project Start and End Dates.";
+        public const string CONTRIBUTOR_ALREADY_EXISTS = "The Contributor already exists.";
 
         public ProjectContributorService(
             IProjectContributorRepository projectContributorRepository)
@@ -40,18 +42,30 @@ namespace Timesheets.BusinessLayer.Services
                     RulesException.ErrorForModel(CONTRIBUTOR_MUST_HAVE_DATES_THAT_ARE_WITHIN_THE_PROJECT_DATES);
         }
 
+        private void ValidateUserAlreadyExists(ProjectContributor model)
+        {
+            if (Repository.All().Any(c => c.ProjectId == model.ProjectId && c.UserId == model.UserId))
+                RulesException.ErrorForModel(CONTRIBUTOR_ALREADY_EXISTS);
+        }
+
         public override ProjectContributor InsertOrUpdate(ProjectContributor model, Guid userId)
         {
+            model.ClearProjectForService();
+
             var add = default(Guid) == model.ProjectContributorId;
             if (add) model.SetProjectContributorId();
             AddOrUpdateAudit(model, userId, add);
-            return Repository.InsertOrUpdate(model, add);
+            Repository.InsertOrUpdate(model, add);
+            Repository.SaveChanges();
+
+            return model;
         }
 
         protected override void ValidateModelRules(ProjectContributor model)
         {
             ValidateStartEndDate(model);
             ValidAgainstProjectStartEndDates(model);
+            ValidateUserAlreadyExists(model);
 
             if (RulesException.Errors.Any()) throw RulesException;
         }

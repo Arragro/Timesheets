@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Timesheets.DataLayer.Models
 {
+    [Serializable]
     public class ProjectInvitation : Auditable<Guid>
     {
         public Guid ProjectInvitationId { get; private set; }
@@ -31,13 +32,18 @@ namespace Timesheets.DataLayer.Models
             ProjectId = project.ProjectId;
             EmailAddress = emailAddress;
             InvitationCode = Guid.NewGuid();
-            //Project = project;
+            Project = project;
         }
 
         public void SetProjectInvitationId()
         {
             if (ProjectInvitationId != default(Guid)) throw new Exception("The ProjectId is already set.");
             ProjectInvitationId = Guid.NewGuid();
+        }
+
+        public void ClearProjectForService()
+        {
+            Project = null;
         }
 
         public void SetProject(Project project)

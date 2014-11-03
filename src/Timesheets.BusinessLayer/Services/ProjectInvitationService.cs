@@ -1,4 +1,5 @@
-﻿using Arragro.Common.ServiceBase;
+﻿using Arragro.Common.Helpers;
+using Arragro.Common.ServiceBase;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
@@ -55,22 +56,24 @@ namespace Timesheets.BusinessLayer.Services
 
         private void EnsureInvitationIsUniqueForUserOrEmail(ProjectInvitation projectInvitation)
         {
-            var query = (
-                from pi in Repository.All()
-                where pi.ProjectId == projectInvitation.ProjectId
-                select pi);
+            if (projectInvitation.ProjectInvitationId == default(Guid))
+            {
+                var query = (
+                    from pi in Repository.All()
+                    where pi.ProjectId == projectInvitation.ProjectId
+                    select pi);
 
-            if (projectInvitation.UserId.HasValue)
-            {
-                query = query.Where(pi => pi.UserId.HasValue && pi.UserId.Value == projectInvitation.UserId.Value);
-                if (query.Any()) RulesException.ErrorForModel(INVITATION_ALREADY_EXISTS_FOR_THIS_USERID);
+                if (projectInvitation.UserId.HasValue)
+                {
+                    query = query.Where(pi => pi.UserId.HasValue && pi.UserId.Value == projectInvitation.UserId.Value);
+                    if (query.Any()) RulesException.ErrorForModel(INVITATION_ALREADY_EXISTS_FOR_THIS_USERID);
+                }
+                else if (!string.IsNullOrEmpty(projectInvitation.EmailAddress))
+                {
+                    query = query.Where(pi => pi.EmailAddress.Trim() == projectInvitation.EmailAddress.Trim());
+                    if (query.Any()) RulesException.ErrorForModel(INVITATION_ALREADY_EXISTS_FOR_THIS_EMAILADDRESS);
+                }
             }
-            else if (!string.IsNullOrEmpty(projectInvitation.EmailAddress))
-            {
-                query = query.Where(pi => pi.EmailAddress.Trim() == projectInvitation.EmailAddress.Trim());
-                if (query.Any()) RulesException.ErrorForModel(INVITATION_ALREADY_EXISTS_FOR_THIS_EMAILADDRESS);
-            }
-            else return;
         }
 
         protected override void ValidateModelRules(ProjectInvitation model)
@@ -86,13 +89,18 @@ namespace Timesheets.BusinessLayer.Services
 
         public override ProjectInvitation InsertOrUpdate(ProjectInvitation model, Guid userId)
         {
+            model.ClearProjectForService();
+
             var add = default(Guid) == model.ProjectInvitationId;
             if (add)
             {
                 model.SetProjectInvitationId();
             }
             AddOrUpdateAudit(model, userId, add);
-            return Repository.InsertOrUpdate(model, add);
+            Repository.InsertOrUpdate(model, add);
+            Repository.SaveChanges();
+
+            return model;
         }
 
         public IEnumerable<ProjectInvitation> GetProjectInvitations(Project project)

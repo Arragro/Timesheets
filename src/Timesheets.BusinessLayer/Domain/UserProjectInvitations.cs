@@ -48,8 +48,8 @@ namespace Timesheets.BusinessLayer.Domain
             Project project, string emailAddress)
         {
             var projectInvitation = new ProjectInvitation(project, emailAddress);
-            _projectInvitationService.ValidateAndInsertOrUpdate(projectInvitation, User.Id);
-            _projectInvitationService.SaveChanges();
+            //This also execute SaveChanges as a result of object graph issues in Entity Framework...
+            projectInvitation = _projectInvitationService.ValidateAndInsertOrUpdate(projectInvitation, User.Id);
             return projectInvitation;
         }
 
@@ -60,15 +60,34 @@ namespace Timesheets.BusinessLayer.Domain
             return projectInvitation;
         }
 
-        public ProjectContributor AcceptInvitation(ProjectInvitation projectInvitation)
+        private ProjectInvitation SetUserAndAcceptanceId(Guid invitationCode, bool accepted)
         {
-            projectInvitation.SetUserId(User.Id);
-            projectInvitation.SetProjectInvitationAccepted(true);
+            var projectInvitation = _projectInvitationService.GetProjectInvitationViaInvitationCode(invitationCode);
+            projectInvitation.SetProject(_projectService.GetProject(projectInvitation.ProjectId));
 
+            projectInvitation.SetUserId(User.Id);
+            projectInvitation.SetProjectInvitationAccepted(accepted);
+
+            //This also execute SaveChanges as a result of object graph issues in Entity Framework...
+            projectInvitation = _projectInvitationService.ValidateAndInsertOrUpdate(projectInvitation, User.Id);
+            _projectInvitationService.SaveChanges();
+            projectInvitation.SetProject(_projectService.Find(projectInvitation.ProjectId));
+            return projectInvitation;
+        }
+
+        public ProjectContributor AcceptInvitation(Guid invitationCode)
+        {
+            var projectInvitation = SetUserAndAcceptanceId(invitationCode, true);
             var projectContributor = new ProjectContributor(projectInvitation);
+            //This also execute SaveChanges as a result of object graph issues in Entity Framework...
             projectContributor = _projectContributorService.ValidateAndInsertOrUpdate(projectContributor, User.Id);
             _projectContributorService.SaveChanges();
             return projectContributor;
+        }
+
+        public void RejectInvitation(Guid invitationCode)
+        {
+            var projectInvitation = SetUserAndAcceptanceId(invitationCode, false);
         }
     }
 }

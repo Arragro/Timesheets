@@ -41,8 +41,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Arragro.Common">
-      <HintPath>..\packages\Arragro.Common.1.0.0.12\lib\net45\Arragro.Common.dll</HintPath>
+    <Reference Include="Arragro.Common, Version=1.0.0.14, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Arragro.Common.1.0.0.14\lib\net45\Arragro.Common.dll</HintPath>
     </Reference>
     <Reference Include="Arragro.EF6">
       <HintPath>..\packages\Arragro.EF6.1.0.0.12\lib\net45\Arragro.EF6.dll</HintPath>

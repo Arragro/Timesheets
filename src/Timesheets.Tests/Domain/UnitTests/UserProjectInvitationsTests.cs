@@ -47,5 +47,63 @@ namespace Timesheets.Tests.Domain.UnitTests
             Assert.NotNull(project2Invitation.Project);
             Assert.Equal(project2.ProjectId, project2Invitation.Project.ProjectId);
         }
+
+        [Fact]
+        public void User_accepts_invitation_and_becomes_contributor()
+        {
+            var user = TestHelper.GetFoo();
+            var userProjectAdministration = TestHelper.GetUserProjects(user);
+            var project = userProjectAdministration.AddProject(new Project("Test 1", user.Id));
+
+            var invitationAdministration = TestHelper.GetUserProjectInvitations(user);
+            invitationAdministration.InviteUserToProject(project, TestHelper.VALID_EMAIL_ADDRESS);
+            var projectInvitation = invitationAdministration.GetProjectInvitations(project).First(i => i.EmailAddress == TestHelper.VALID_EMAIL_ADDRESS);
+
+            // Will be set by the email service once the email has gone
+            var backEndAdministration = TestHelper.GetBackEndAdministration();
+            backEndAdministration.SetProjectInvitationSent(projectInvitation);
+            projectInvitation = invitationAdministration.GetProjectInvitations(project).First(i => i.EmailAddress == TestHelper.VALID_EMAIL_ADDRESS);
+
+            var invitee = TestHelper.GetBar();
+            invitee.UserName = TestHelper.VALID_EMAIL_ADDRESS;
+            invitationAdministration = TestHelper.GetUserProjectInvitations(invitee);
+            var contributor = invitationAdministration.AcceptInvitation(projectInvitation.InvitationCode);
+            projectInvitation = invitationAdministration.GetProjectInvitations(project).First(i => i.InvitationCode == projectInvitation.InvitationCode);
+
+            Assert.NotNull(projectInvitation);
+            Assert.Equal(invitee.Id, projectInvitation.UserId);
+            Assert.True(projectInvitation.InvitationAccepted.HasValue);
+            Assert.True(projectInvitation.InvitationAccepted.Value);
+
+            Assert.NotNull(contributor);
+            Assert.Equal(invitee.Id, contributor.UserId);
+        }
+
+        [Fact]
+        public void User_rejects_invitation()
+        {
+            var user = TestHelper.GetFoo();
+            var userProjectAdministration = TestHelper.GetUserProjects(user);
+            var project = userProjectAdministration.AddProject(new Project("Test 1", user.Id));
+
+            var invitationAdministration = TestHelper.GetUserProjectInvitations(user);
+            var projectInvitation = invitationAdministration.InviteUserToProject(project, TestHelper.VALID_EMAIL_ADDRESS);
+
+            // Will be set by the email service once the email has gone
+            var backEndAdministration = TestHelper.GetBackEndAdministration();
+            backEndAdministration.SetProjectInvitationSent(projectInvitation);
+
+            var invitee = TestHelper.GetBar();
+            invitee.UserName = TestHelper.VALID_EMAIL_ADDRESS;
+            invitationAdministration = TestHelper.GetUserProjectInvitations(invitee);
+            invitationAdministration.RejectInvitation(projectInvitation.InvitationCode);
+
+            projectInvitation = invitationAdministration.GetProjectInvitations(project).First(i => i.InvitationCode == projectInvitation.InvitationCode);
+
+            Assert.NotNull(projectInvitation);
+            Assert.Equal(invitee.Id, projectInvitation.UserId);
+            Assert.True(projectInvitation.InvitationAccepted.HasValue);
+            Assert.False(projectInvitation.InvitationAccepted.Value);
+        }
     }
 }
