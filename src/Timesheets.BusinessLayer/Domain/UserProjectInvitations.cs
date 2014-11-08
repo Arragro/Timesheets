@@ -71,7 +71,7 @@ namespace Timesheets.BusinessLayer.Domain
             //This also execute SaveChanges as a result of object graph issues in Entity Framework...
             projectInvitation = _projectInvitationService.ValidateAndInsertOrUpdate(projectInvitation, User.Id);
             _projectInvitationService.SaveChanges();
-            projectInvitation.SetProject(_projectService.Find(projectInvitation.ProjectId));
+            //projectInvitation.SetProject(_projectService.Find(projectInvitation.ProjectId));
             return projectInvitation;
         }
 

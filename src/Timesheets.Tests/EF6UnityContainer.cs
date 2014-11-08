@@ -24,6 +24,9 @@ namespace Timesheets.Tests
                 x.Database.CreateIfNotExists();
             });
 
+            // Forces repositories to use the same context to prevent object graph issues.
+            unityContainer.RegisterType<TimesheetsContext, TimesheetsContext>(new ContainerControlledLifetimeManager());
+
             unityContainer.RegisterType<IProjectRepository, ProjectRepository>();
             unityContainer.RegisterType<ITimesheetEntryRepository, TimesheetEntryRepository>();
             unityContainer.RegisterType<IProjectInvitationRepository, ProjectInvitationRepository>();

@@ -28,90 +28,105 @@ namespace Timesheets.Tests.Domain.UnitTests
         [Fact]
         public void UserTimesheetEntries_instantiation_throws_error_when_null_services_supplied()
         {
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                {
-                    try
+            using (var testHelper = new TestHelper())
+            {
+                Assert.Throws<ArgumentNullException>(
+                    () =>
                     {
-                        new UserTimesheetEntries(TestHelper.GetFoo(), null, null);
-                    }
-                    catch (ArgumentNullException ex)
+                        try
+                        {
+                            new UserTimesheetEntries(TestHelper.GetFoo(), null, null);
+                        }
+                        catch (ArgumentNullException ex)
+                        {
+                            Assert.Equal(ex.ParamName, "cacheSettings");
+                            throw ex;
+                        }
+                    });
+                Assert.Throws<ArgumentNullException>(
+                    () =>
                     {
-                        Assert.Equal(ex.ParamName, "cacheSettings");
-                        throw ex;
-                    }
-                });
-            Assert.Throws<ArgumentNullException>(
-                () =>
-                {
-                    try
-                    {
-                        new UserTimesheetEntries(
-                            TestHelper.GetFoo(), TestHelper.GetCacheSettings(), null);
-                    }
-                    catch (ArgumentNullException ex)
-                    {
-                        Assert.Equal(ex.ParamName, "timesheetEntryService");
-                        throw ex;
-                    }
-                });
+                        try
+                        {
+                            new UserTimesheetEntries(
+                                TestHelper.GetFoo(), testHelper.GetCacheSettings(), null);
+                        }
+                        catch (ArgumentNullException ex)
+                        {
+                            Assert.Equal(ex.ParamName, "timesheetEntryService");
+                            throw ex;
+                        }
+                    });
+            }
         }
 
         [Fact]
         public void add_User_TimesheetEntry()
         {
-            var fooUser = TestHelper.GetFoo();
-            var userTimeSheetEntries = TestHelper.GetUserTimesheetEntries(fooUser);
+            using (var testHelper = new TestHelper())
+            {
+                var fooUser = TestHelper.GetFoo();
+                var userTimeSheetEntries = testHelper.GetUserTimesheetEntries(fooUser);
 
-            var timesheetEntry = new TimesheetEntry(
-                fooUser.Id, DateTime.Now.Date, 8, "Foo Entry");
+                var timesheetEntry = new TimesheetEntry(
+                    fooUser.Id, DateTime.Now.Date, 8, "Foo Entry");
 
-            timesheetEntry = userTimeSheetEntries.AddTimesheetEntry(timesheetEntry);
-            Assert.NotEqual(default(Guid), timesheetEntry.TimesheetEntryId);
+                timesheetEntry = userTimeSheetEntries.AddTimesheetEntry(timesheetEntry);
+                Assert.NotEqual(default(Guid), timesheetEntry.TimesheetEntryId);
+            }
         }
 
         [Fact]
         public void get_User_last_months_worth_of_TimesheetEntries()
         {
-            var fooUser = TestHelper.GetFoo();
-            var userTimeSheetEntries = TestHelper.GetUserTimesheetEntries(fooUser);
-            LoadTimeSheetEntries(userTimeSheetEntries, fooUser);
+            using (var testHelper = new TestHelper())
+            {
+                var fooUser = TestHelper.GetFoo();
+                var userTimeSheetEntries = testHelper.GetUserTimesheetEntries(fooUser);
+                LoadTimeSheetEntries(userTimeSheetEntries, fooUser);
 
-            var timesheetEntries = userTimeSheetEntries.GetLastMonthsTimesheetEntries();
-            Assert.Equal(31, timesheetEntries.Count());
+                var timesheetEntries = userTimeSheetEntries.GetLastMonthsTimesheetEntries();
+                Assert.Equal(31, timesheetEntries.Count());
+            }
         }
 
         [Fact]
         public void get_User_range_of_TimesheetEntries()
         {
-            var fooUser = TestHelper.GetFoo();
-            var userTimeSheetEntries = TestHelper.GetUserTimesheetEntries(fooUser);
-            LoadTimeSheetEntries(userTimeSheetEntries, fooUser);
+            using (var testHelper = new TestHelper())
+            {
+                var fooUser = TestHelper.GetFoo();
+                var userTimeSheetEntries = testHelper.GetUserTimesheetEntries(fooUser);
+                LoadTimeSheetEntries(userTimeSheetEntries, fooUser);
 
-            var timesheetEntries =
-                userTimeSheetEntries.GetRangeOfTimesheetEntries(
-                    DateTime.Now.AddDays(-10), DateTime.Now);
-            Assert.Equal(10, timesheetEntries.Count());
+                var timesheetEntries =
+                    userTimeSheetEntries.GetRangeOfTimesheetEntries(
+                        DateTime.Now.AddDays(-10), DateTime.Now);
+                Assert.Equal(10, timesheetEntries.Count());
+            }
         }
 
         [Fact]
         public void get_User_TimesheetEntries_only_return_that_Users()
         {
-            var numberOfUserTimesheets = 5;
+            using (var testHelper = new TestHelper())
+            {
+                var numberOfUserTimesheets = 5;
 
-            var fooUser = TestHelper.GetFoo();
-            var fooUserTimeSheetEntries = TestHelper.GetUserTimesheetEntries(fooUser);
-            LoadTimeSheetEntries(fooUserTimeSheetEntries, fooUser, numberOfUserTimesheets);
+                var fooUser = TestHelper.GetFoo();
+                var fooUserTimeSheetEntries = testHelper.GetUserTimesheetEntries(fooUser);
+                LoadTimeSheetEntries(fooUserTimeSheetEntries, fooUser, numberOfUserTimesheets);
 
-            var barUser = TestHelper.GetBar();
-            var barUserTimeSheetEntries = TestHelper.GetUserTimesheetEntries(barUser);
-            LoadTimeSheetEntries(barUserTimeSheetEntries, barUser, numberOfUserTimesheets);
+                var barUser = TestHelper.GetBar();
+                var barUserTimeSheetEntries = testHelper.GetUserTimesheetEntries(barUser);
+                LoadTimeSheetEntries(barUserTimeSheetEntries, barUser, numberOfUserTimesheets);
 
-            Assert.Equal(numberOfUserTimesheets,
-                fooUserTimeSheetEntries.GetLastMonthsTimesheetEntries().Count());
-            Assert.Equal(numberOfUserTimesheets,
-                barUserTimeSheetEntries.GetRangeOfTimesheetEntries(
-                    DateTime.Now.AddDays(0 - numberOfUserTimesheets), DateTime.Now).Count());
+                Assert.Equal(numberOfUserTimesheets,
+                    fooUserTimeSheetEntries.GetLastMonthsTimesheetEntries().Count());
+                Assert.Equal(numberOfUserTimesheets,
+                    barUserTimeSheetEntries.GetRangeOfTimesheetEntries(
+                        DateTime.Now.AddDays(0 - numberOfUserTimesheets), DateTime.Now).Count());
+            }
         }
     }
 }

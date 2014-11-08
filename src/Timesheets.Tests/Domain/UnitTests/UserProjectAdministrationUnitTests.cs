@@ -34,23 +34,26 @@ namespace Timesheets.Tests.Domain.UnitTests
         [Fact]
         public void Project_update_fails_when_project_has_not_been_saved()
         {
-            var fooUser = TestHelper.GetFoo();
-            var userProjectAdministration = TestHelper.GetUserProjects(TestHelper.GetFoo());
+            using (var testHelper = new TestHelper())
+            {
+                var fooUser = TestHelper.GetFoo();
+                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetFoo());
 
-            Assert.Throws<RulesException<Project>>(
-                () =>
-                {
-                    try
+                Assert.Throws<RulesException<Project>>(
+                    () =>
                     {
-                        userProjectAdministration.UpdateProject(
-                            new Project("Test", Guid.NewGuid()));
-                    }
-                    catch (RulesException ex)
-                    {
-                        Assert.Equal(ex.Errors[0].Message, UserProjects.PROJECT_HAS_NOT_BEEN_SAVED);
-                        throw ex;
-                    }
-                });
+                        try
+                        {
+                            userProjectAdministration.UpdateProject(
+                                new Project("Test", Guid.NewGuid()));
+                        }
+                        catch (RulesException ex)
+                        {
+                            Assert.Equal(ex.Errors[0].Message, UserProjects.PROJECT_HAS_NOT_BEEN_SAVED);
+                            throw ex;
+                        }
+                    });
+            }
         }
 
         [Fact]
@@ -90,16 +93,19 @@ namespace Timesheets.Tests.Domain.UnitTests
         [Fact]
         public void Project_OwnerUserId_is_same_as_creator()
         {
-            var fooUser = TestHelper.GetFoo();
-            var userProjectAdministration = TestHelper.GetUserProjects(fooUser);
+            using (var testHelper = new TestHelper())
+            {
+                var fooUser = TestHelper.GetFoo();
+                var userProjectAdministration = testHelper.GetUserProjects(fooUser);
 
-            var project = userProjectAdministration.AddProject(
-                new Project(
-                    "Test", Guid.NewGuid(),
-                    startDate: DateTime.Now,
-                    endDate: DateTime.Now.AddDays(1)));
+                var project = userProjectAdministration.AddProject(
+                    new Project(
+                        "Test", Guid.NewGuid(),
+                        startDate: DateTime.Now,
+                        endDate: DateTime.Now.AddDays(1)));
 
-            Assert.Equal(project.OwnerUserId, fooUser.Id);
+                Assert.Equal(project.OwnerUserId, fooUser.Id);
+            }
         }
 
         [Fact]
@@ -142,48 +148,57 @@ namespace Timesheets.Tests.Domain.UnitTests
         [Fact]
         public void Project_transfer_ownership_succeeds_when_owner_initiates()
         {
-            var fooUser = TestHelper.GetFoo();
-            var userProjectAdministration = TestHelper.GetUserProjects(TestHelper.GetFoo());
+            using (var testHelper = new TestHelper())
+            {
+                var fooUser = TestHelper.GetFoo();
+                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetFoo());
 
-            var project = userProjectAdministration.AddProject(
-                new Project(
-                    "Test", Guid.NewGuid(),
-                    startDate: DateTime.Now,
-                    endDate: DateTime.Now.AddDays(1)));
+                var project = userProjectAdministration.AddProject(
+                    new Project(
+                        "Test", Guid.NewGuid(),
+                        startDate: DateTime.Now,
+                        endDate: DateTime.Now.AddDays(1)));
 
-            var newOwner = Guid.NewGuid();
-            project = userProjectAdministration.TransferProjectOwnership(
-                project, newOwner);
+                var newOwner = Guid.NewGuid();
+                project = userProjectAdministration.TransferProjectOwnership(
+                    project, newOwner);
 
-            Assert.Equal(project.OwnerUserId, newOwner);
+                Assert.Equal(project.OwnerUserId, newOwner);
+            }
         }
 
         [Fact]
         public void get_User_Projects()
         {
-            var fooUser = TestHelper.GetFoo();
-            var userProjectAdministration = TestHelper.GetUserProjects(TestHelper.GetFoo());
+            using (var testHelper = new TestHelper())
+            {
+                var fooUser = TestHelper.GetFoo();
+                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetFoo());
 
-            LoadProjects(userProjectAdministration, Guid.NewGuid());
+                LoadProjects(userProjectAdministration, Guid.NewGuid());
 
-            var userProjects = userProjectAdministration.GetUserProjects();
-            Assert.Equal(2, userProjects.Count());
+                var userProjects = userProjectAdministration.GetUserProjects();
+                Assert.Equal(2, userProjects.Count());
+            }
         }
 
         [Fact]
         public void get_User_Projects_only_returns_that_Users()
         {
-            var fooUser = TestHelper.GetFoo();
-            var fooUserProjectAdministration = TestHelper.GetUserProjects(TestHelper.GetFoo());
+            using (var testHelper = new TestHelper())
+            {
+                var fooUser = TestHelper.GetFoo();
+                var fooUserProjectAdministration = testHelper.GetUserProjects(TestHelper.GetFoo());
 
-            var barUser = TestHelper.GetBar();
-            var barUserProjectAdministration = TestHelper.GetUserProjects(TestHelper.GetFoo());
+                var barUser = TestHelper.GetBar();
+                var barUserProjectAdministration = testHelper.GetUserProjects(TestHelper.GetFoo());
 
-            LoadProjects(fooUserProjectAdministration, fooUser.Id);
-            LoadProjects(barUserProjectAdministration, fooUser.Id);
+                LoadProjects(fooUserProjectAdministration, fooUser.Id);
+                LoadProjects(barUserProjectAdministration, fooUser.Id);
 
-            var userProjects = barUserProjectAdministration.GetUserProjects();
-            Assert.Equal(2, userProjects.Count());
+                var userProjects = barUserProjectAdministration.GetUserProjects();
+                Assert.Equal(2, userProjects.Count());
+            }
         }
     }
 }

@@ -12,177 +12,198 @@ namespace Timesheets.Tests.Services.UnitTests
         [Fact]
         public void ProjectInvitationService_validates_model_attributes()
         {
-            var projectInvitationService = TestHelper.GetProjectInvitationService();
+            using (var testHelper = new TestHelper())
+            {
+                var projectInvitationService = testHelper.GetProjectInvitationService();
 
-            Assert.Throws<RulesException<ProjectInvitation>>(
-                () =>
-                {
-                    try
+                Assert.Throws<RulesException<ProjectInvitation>>(
+                    () =>
                     {
-                        projectInvitationService.ValidateModel(new ProjectInvitation(new Project("Test", Guid.NewGuid()), null));
-                    }
-                    catch (RulesException ex)
-                    {
-                        Assert.Equal(2, ex.Errors.Count);
-                        Assert.NotNull(ex.ContainsErrorForProperty(".EmailAddress"));
-                        Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == ProjectInvitationService.PROJECTID_NOT_SET));
-                        throw ex;
-                    }
-                });
+                        try
+                        {
+                            projectInvitationService.ValidateModel(new ProjectInvitation(new Project("Test", Guid.NewGuid()), null));
+                        }
+                        catch (RulesException ex)
+                        {
+                            Assert.Equal(2, ex.Errors.Count);
+                            Assert.NotNull(ex.ContainsErrorForProperty(".EmailAddress"));
+                            Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == ProjectInvitationService.PROJECTID_NOT_SET));
+                            throw ex;
+                        }
+                    });
+            }
         }
 
         [Fact]
         public void ProjectInviationService_validates_model_email_invalid()
         {
-            var projectInvitationService = TestHelper.GetProjectInvitationService();
+            using (var testHelper = new TestHelper())
+            {
+                var projectInvitationService = testHelper.GetProjectInvitationService();
 
-            Assert.Throws<RulesException<ProjectInvitation>>(
-                () =>
-                {
-                    try
+                Assert.Throws<RulesException<ProjectInvitation>>(
+                    () =>
                     {
-                        var project = new Project("Test", Guid.NewGuid());
-                        project.SetProjectId();
+                        try
+                        {
+                            var project = new Project("Test", Guid.NewGuid());
+                            project.SetProjectId();
 
-                        projectInvitationService.ValidateModel(
-                            new ProjectInvitation(
-                                project, "bad_email"));
-                    }
-                    catch (RulesException ex)
-                    {
-                        Assert.Equal(1, ex.Errors.Count);
-                        Assert.NotNull(ex.ContainsErrorForProperty(".EmailAddress"));
-                        throw ex;
-                    }
-                });
+                            projectInvitationService.ValidateModel(
+                                new ProjectInvitation(
+                                    project, "bad_email"));
+                        }
+                        catch (RulesException ex)
+                        {
+                            Assert.Equal(1, ex.Errors.Count);
+                            Assert.NotNull(ex.ContainsErrorForProperty(".EmailAddress"));
+                            throw ex;
+                        }
+                    });
+            }
         }
 
         [Fact]
         public void ProjectInviationService_validates_model_email_valid()
         {
-            var projectInvitationService = TestHelper.GetProjectInvitationService();
+            using (var testHelper = new TestHelper())
+            {
+                var projectInvitationService = testHelper.GetProjectInvitationService();
 
-            var project = new Project("Test", Guid.NewGuid());
-            project.SetProjectId();
+                var project = new Project("Test", Guid.NewGuid());
+                project.SetProjectId();
 
-            projectInvitationService.ValidateModel(
-                            new ProjectInvitation(
-                                project, TestHelper.VALID_EMAIL_ADDRESS));
+                projectInvitationService.ValidateModel(
+                                new ProjectInvitation(
+                                    project, TestHelper.VALID_EMAIL_ADDRESS));
 
-            Assert.True(true, "Email Address is valid");
+                Assert.True(true, "Email Address is valid");
+            }
         }
 
         [Fact]
         public void projectInvitationService_validates_InvitationAccepted_invalid()
         {
-            var projectInvitationService = TestHelper.GetProjectInvitationService();
+            using (var testHelper = new TestHelper())
+            {
+                var projectInvitationService = testHelper.GetProjectInvitationService();
 
-            Assert.Throws<Exception>(
-                () =>
-                {
-                    try
+                Assert.Throws<Exception>(
+                    () =>
                     {
-                        var project = new Project("Test", Guid.NewGuid());
-                        project.SetProjectId();
+                        try
+                        {
+                            var project = new Project("Test", Guid.NewGuid());
+                            project.SetProjectId();
 
-                        var projectInvitation = new ProjectInvitation(
-                                project, TestHelper.VALID_EMAIL_ADDRESS);
-                        projectInvitation.SetProjectInvitationAccepted(true);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw ex;
-                    }
-                });
+                            var projectInvitation = new ProjectInvitation(
+                                    project, TestHelper.VALID_EMAIL_ADDRESS);
+                            projectInvitation.SetProjectInvitationAccepted(true);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw ex;
+                        }
+                    });
+            }
         }
 
         [Fact]
         public void ProjectInvitionService_UserId_already_invited()
         {
-            var userProjectAdministration = TestHelper.GetUserProjects(TestHelper.GetFoo());
-            var projectInvitationService = TestHelper.GetProjectInvitationService();
+            using (var testHelper = new TestHelper())
+            {
+                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetFoo());
+                var projectInvitationService = testHelper.GetProjectInvitationService();
 
-            var project = new Project("Test", Guid.NewGuid());
-            userProjectAdministration.AddProject(project);
+                var project = new Project("Test", Guid.NewGuid());
+                userProjectAdministration.AddProject(project);
 
-            var userId = Guid.NewGuid();
+                var userId = Guid.NewGuid();
 
-            var projectInvitation =
-                new ProjectInvitation(
-                    project, TestHelper.VALID_EMAIL_ADDRESS);
-            projectInvitation.SetUserId(userId);
+                var projectInvitation =
+                    new ProjectInvitation(
+                        project, TestHelper.VALID_EMAIL_ADDRESS);
+                projectInvitation.SetUserId(userId);
 
-            projectInvitationService.ValidateAndInsertOrUpdate(projectInvitation, userId);
-            projectInvitationService.SaveChanges();
+                projectInvitationService.ValidateAndInsertOrUpdate(projectInvitation, userId);
+                projectInvitationService.SaveChanges();
 
-            Assert.Throws<RulesException<ProjectInvitation>>(
-                () =>
-                {
-                    try
+                Assert.Throws<RulesException<ProjectInvitation>>(
+                    () =>
                     {
-                        var newProjectInvitation =
-                            new ProjectInvitation(
-                                project, TestHelper.VALID_EMAIL_ADDRESS);
-                        newProjectInvitation.SetUserId(userId);
-                        projectInvitationService.ValidateModel(newProjectInvitation);
-                    }
-                    catch (RulesException ex)
-                    {
-                        Assert.Equal(1, ex.Errors.Count);
-                        Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == ProjectInvitationService.INVITATION_ALREADY_EXISTS_FOR_THIS_USERID));
-                        throw ex;
-                    }
-                });
+                        try
+                        {
+                            var newProjectInvitation =
+                                new ProjectInvitation(
+                                    project, TestHelper.VALID_EMAIL_ADDRESS);
+                            newProjectInvitation.SetUserId(userId);
+                            projectInvitationService.ValidateModel(newProjectInvitation);
+                        }
+                        catch (RulesException ex)
+                        {
+                            Assert.Equal(1, ex.Errors.Count);
+                            Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == ProjectInvitationService.INVITATION_ALREADY_EXISTS_FOR_THIS_USERID));
+                            throw ex;
+                        }
+                    });
+            }
         }
 
         [Fact]
         public void ProjectInvitionService_EmailAddress_already_invited()
         {
-            var userProjectAdministration = TestHelper.GetUserProjects(TestHelper.GetFoo());
-            var projectInvitationService = TestHelper.GetProjectInvitationService();
+            using (var testHelper = new TestHelper())
+            {
+                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetFoo());
+                var projectInvitationService = testHelper.GetProjectInvitationService();
 
-            var project = new Project("Test", Guid.NewGuid());
-            project = userProjectAdministration.AddProject(project);
+                var project = new Project("Test", Guid.NewGuid());
+                project = userProjectAdministration.AddProject(project);
 
-            projectInvitationService.ValidateAndInsertOrUpdate(
-                new ProjectInvitation(
-                    project, TestHelper.VALID_EMAIL_ADDRESS), Guid.NewGuid());
-            projectInvitationService.SaveChanges();
+                projectInvitationService.ValidateAndInsertOrUpdate(
+                    new ProjectInvitation(
+                        project, TestHelper.VALID_EMAIL_ADDRESS), Guid.NewGuid());
+                projectInvitationService.SaveChanges();
 
-            Assert.Throws<RulesException<ProjectInvitation>>(
-                () =>
-                {
-                    try
+                Assert.Throws<RulesException<ProjectInvitation>>(
+                    () =>
                     {
-                        projectInvitationService.ValidateModel(
-                            new ProjectInvitation(project, TestHelper.VALID_EMAIL_ADDRESS));
-                    }
-                    catch (RulesException ex)
-                    {
-                        Assert.Equal(1, ex.Errors.Count);
-                        Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == ProjectInvitationService.INVITATION_ALREADY_EXISTS_FOR_THIS_EMAILADDRESS));
-                        throw ex;
-                    }
-                });
+                        try
+                        {
+                            projectInvitationService.ValidateModel(
+                                new ProjectInvitation(project, TestHelper.VALID_EMAIL_ADDRESS));
+                        }
+                        catch (RulesException ex)
+                        {
+                            Assert.Equal(1, ex.Errors.Count);
+                            Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == ProjectInvitationService.INVITATION_ALREADY_EXISTS_FOR_THIS_EMAILADDRESS));
+                            throw ex;
+                        }
+                    });
+            }
         }
 
         [Fact]
         public void ProjectInvitationService_trhows_when_ProjectInvitationCode_does_not_exist()
         {
-            Assert.Throws<ApplicationException>(
-                () =>
-                {
-                    try
+            using (var testHelper = new TestHelper())
+            {
+                Assert.Throws<ApplicationException>(
+                    () =>
                     {
-                        var projectInvitationService = TestHelper.GetProjectInvitationService();
-                        projectInvitationService.GetProjectInvitationViaInvitationCode(Guid.NewGuid());
-                    }
-                    catch (ApplicationException ex)
-                    {
-                        Assert.Equal(ProjectInvitationService.INVITATIONCODE_DOES_NOT_EXIST, ex.Message);
-                        throw;
-                    }
-                });
+                        try
+                        {
+                            var projectInvitationService = testHelper.GetProjectInvitationService();
+                            projectInvitationService.GetProjectInvitationViaInvitationCode(Guid.NewGuid());
+                        }
+                        catch (ApplicationException ex)
+                        {
+                            Assert.Equal(ProjectInvitationService.INVITATIONCODE_DOES_NOT_EXIST, ex.Message);
+                            throw;
+                        }
+                    });
+            }
         }
     }
 }

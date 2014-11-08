@@ -8,70 +8,69 @@ using Timesheets.BusinessLayer.Services;
 
 namespace Timesheets.Tests
 {
-    public static class TestHelper
+    // Test helper is IDisposable, the DbContext is going to exist per request on a web application
+    // and for the lifetime of a series of calls.
+    public class TestHelper : IDisposable
     {
-        static TestHelper()
+        private IUnityContainer _unityContainer;
+
+        public TestHelper(bool dropDatabase = false)
         {
-            UnityContainer(true);
+#if !INTEGRATION_TESTS
+            _unityContainer = InMemoryUnityContainer.GetInMemoryContainer();
+#else
+            _unityContainer = EF6UnityContainer.GetEF6Container(dropDatabase);
+#endif
         }
 
         public const string VALID_EMAIL_ADDRESS = "email.is.good@test.com";
 
-        public static IUnityContainer UnityContainer(bool dropDatabase = false)
+        public ProjectService GetProjectService()
         {
-#if !INTEGRATION_TESTS
-            return InMemoryUnityContainer.GetInMemoryContainer();
-#else
-            return EF6UnityContainer.GetEF6Container(dropDatabase);
-#endif
+            return _unityContainer.Resolve<ProjectService>();
         }
 
-        public static ProjectService GetProjectService()
+        public TimesheetEntryService GetTimesheetEntryService()
         {
-            return UnityContainer().Resolve<ProjectService>();
+            return _unityContainer.Resolve<TimesheetEntryService>();
         }
 
-        public static TimesheetEntryService GetTimesheetEntryService()
+        public ProjectInvitationService GetProjectInvitationService()
         {
-            return UnityContainer().Resolve<TimesheetEntryService>();
+            return _unityContainer.Resolve<ProjectInvitationService>();
         }
 
-        public static ProjectInvitationService GetProjectInvitationService()
+        public ProjectContributorService GetProjectContributorService()
         {
-            return UnityContainer().Resolve<ProjectInvitationService>();
+            return _unityContainer.Resolve<ProjectContributorService>();
         }
 
-        public static ProjectContributorService GetProjectContributorService()
+        public BackEndAdministration GetBackEndAdministration()
         {
-            return UnityContainer().Resolve<ProjectContributorService>();
+            return _unityContainer.Resolve<BackEndAdministration>();
         }
 
-        public static BackEndAdministration GetBackEndAdministration()
+        public UserTimesheetEntries GetUserTimesheetEntries(IUser<Guid> user)
         {
-            return UnityContainer(false).Resolve<BackEndAdministration>();
-        }
-
-        public static UserTimesheetEntries GetUserTimesheetEntries(IUser<Guid> user)
-        {
-            return UnityContainer(false).Resolve<UserTimesheetEntries>(
+            return _unityContainer.Resolve<UserTimesheetEntries>(
                 new ParameterOverride("user", user));
         }
 
-        public static UserProjects GetUserProjects(IUser<Guid> user)
+        public UserProjects GetUserProjects(IUser<Guid> user)
         {
-            return UnityContainer(false).Resolve<UserProjects>(
+            return _unityContainer.Resolve<UserProjects>(
                 new ParameterOverride("user", user));
         }
 
-        public static UserProjectInvitations GetUserProjectInvitations(IUser<Guid> user)
+        public UserProjectInvitations GetUserProjectInvitations(IUser<Guid> user)
         {
-            return UnityContainer(false).Resolve<UserProjectInvitations>(
+            return _unityContainer.Resolve<UserProjectInvitations>(
                 new ParameterOverride("user", user));
         }
 
-        public static CacheSettings GetCacheSettings()
+        public CacheSettings GetCacheSettings()
         {
-            return UnityContainer(false).Resolve<CacheSettings>();
+            return _unityContainer.Resolve<CacheSettings>();
         }
 
         public static IUser<Guid> GetUser(Guid id, string userName)
@@ -90,6 +89,20 @@ namespace Timesheets.Tests
         public static IUser<Guid> GetBar()
         {
             return GetUser(Guid.NewGuid(), "Bar");
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _unityContainer = null;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }
