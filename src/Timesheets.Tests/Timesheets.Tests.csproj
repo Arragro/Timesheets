@@ -95,7 +95,7 @@
   <ItemGroup>
     <Compile Include="Domain\UnitTests\BackEndAdministrationUnitTests.cs" />
     <Compile Include="Domain\UnitTests\UserProjectInvitationsTests.cs" />
-    <Compile Include="Domain\UnitTests\UserProjectAdministrationUnitTests.cs" />
+    <Compile Include="Domain\UnitTests\UserProjectsUnitTests.cs" />
     <Compile Include="Domain\UnitTests\UserTimesheetEntriesUnitTests.cs" />
     <Compile Include="InMemoryIdentity\MemoryUser.cs">
       <SubType>Code</SubType>

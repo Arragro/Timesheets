@@ -25,25 +25,40 @@ namespace Timesheets.DataLayer.Models
         protected ProjectContributor()
         { }
 
-        public ProjectContributor(
-            ProjectInvitation projectInvitation)
+        private void ConfigureProjectContributor(
+            Project project, Guid userId)
         {
-            if (projectInvitation == null) throw new ArgumentNullException("projectInvitation", "The Project Invitation supplied is null");
-            if (projectInvitation.Project == null) throw new ArgumentNullException("projectInvitation.Project", "The Project supplied is null");
-            if (!projectInvitation.UserId.HasValue ||
-                (projectInvitation.UserId.HasValue && projectInvitation.UserId.Value == default(Guid)))
-                throw new ArgumentNullException("projectInvitation.UserId", "The Project Invitation does not have a UserId");
-            ProjectId = projectInvitation.ProjectId;
-            UserId = projectInvitation.UserId.Value;
+            if (project == null) throw new ArgumentNullException("project", "The Project supplied is null.");
+            if (userId == default(Guid))
+                throw new ArgumentNullException("userId", "The UserId supplied is null.");
+
+            ProjectId = project.ProjectId;
+            UserId = userId;
             ContributorRole = ContributorRole.User;
             WeeklyContributorHoursLimit = null;
             RequiresApproval = false;
-            StartDate = projectInvitation.Project.StartDate;
-            EndDate = projectInvitation.Project.EndDate;
+            StartDate = project.StartDate;
+            EndDate = project.EndDate;
             PurchaseOrderNumber = null;
             HourlyRate = null;
 
-            Project = projectInvitation.Project;
+            Project = project;
+        }
+
+        public ProjectContributor(
+            ProjectInvitation projectInvitation)
+        {
+            if (projectInvitation == null) throw new ArgumentNullException("projectInvitation", "The Project Invitation supplied is null.");
+            if (!projectInvitation.UserId.HasValue ||
+                (projectInvitation.UserId.HasValue && projectInvitation.UserId.Value == default(Guid)))
+                throw new ArgumentNullException("projectInvitation.UserId", "The Project Invitation does not have a UserId.");
+            ConfigureProjectContributor(projectInvitation.Project, projectInvitation.UserId.Value);
+        }
+
+        public ProjectContributor(
+            Project project, Guid userId)
+        {
+            ConfigureProjectContributor(project, userId);
         }
 
         public void SetProjectContributorId()
@@ -52,7 +67,7 @@ namespace Timesheets.DataLayer.Models
             ProjectContributorId = Guid.NewGuid();
         }
 
-        public void SetContributorRoles(ContributorRole contributorRole)
+        public void SetContributorRole(ContributorRole contributorRole)
         {
             ContributorRole = contributorRole;
         }

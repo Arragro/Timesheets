@@ -15,19 +15,28 @@ namespace Timesheets.BusinessLayer.Domain
         private readonly ProjectService _projectService;
         private readonly ProjectInvitationService _projectInvitationService;
         private readonly ProjectContributorService _projectContributorService;
+        private readonly SecurityRules _securityRules;
 
         public UserProjectInvitations(
             IUser<Guid> user,
             CacheSettings cacheSettings,
             ProjectService projectService,
             ProjectInvitationService projectInvitationService,
-            ProjectContributorService projectContributionService)
+            ProjectContributorService projectContributorService,
+            SecurityRules securityRules)
         {
+            if (cacheSettings == null) throw new ArgumentNullException("cacheSettings");
+            if (projectService == null) throw new ArgumentNullException("projectService");
+            if (projectInvitationService == null) throw new ArgumentNullException("projectInvitationService");
+            if (projectContributorService == null) throw new ArgumentNullException("projectContributorService");
+            if (securityRules == null) throw new ArgumentNullException("securityRules");
+
             User = user;
             _cacheSettings = cacheSettings;
             _projectService = projectService;
             _projectInvitationService = projectInvitationService;
-            _projectContributorService = projectContributionService;
+            _projectContributorService = projectContributorService;
+            _securityRules = securityRules;
         }
 
         private IEnumerable<ProjectInvitation> LoadProjects(IEnumerable<ProjectInvitation> projectInvitations)
@@ -48,8 +57,9 @@ namespace Timesheets.BusinessLayer.Domain
             Project project, string emailAddress)
         {
             var projectInvitation = new ProjectInvitation(project, emailAddress);
-            //This also execute SaveChanges as a result of object graph issues in Entity Framework...
+            _securityRules.IsUserAuthorisedToModifyProjectData(project, User);
             projectInvitation = _projectInvitationService.ValidateAndInsertOrUpdate(projectInvitation, User.Id);
+            _projectInvitationService.SaveChanges();
             return projectInvitation;
         }
 
@@ -68,10 +78,9 @@ namespace Timesheets.BusinessLayer.Domain
             projectInvitation.SetUserId(User.Id);
             projectInvitation.SetProjectInvitationAccepted(accepted);
 
-            //This also execute SaveChanges as a result of object graph issues in Entity Framework...
             projectInvitation = _projectInvitationService.ValidateAndInsertOrUpdate(projectInvitation, User.Id);
             _projectInvitationService.SaveChanges();
-            //projectInvitation.SetProject(_projectService.Find(projectInvitation.ProjectId));
+
             return projectInvitation;
         }
 
@@ -79,7 +88,6 @@ namespace Timesheets.BusinessLayer.Domain
         {
             var projectInvitation = SetUserAndAcceptanceId(invitationCode, true);
             var projectContributor = new ProjectContributor(projectInvitation);
-            //This also execute SaveChanges as a result of object graph issues in Entity Framework...
             projectContributor = _projectContributorService.ValidateAndInsertOrUpdate(projectContributor, User.Id);
             _projectContributorService.SaveChanges();
             return projectContributor;

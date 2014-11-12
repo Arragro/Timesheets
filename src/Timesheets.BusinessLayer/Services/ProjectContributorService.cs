@@ -75,5 +75,13 @@ namespace Timesheets.BusinessLayer.Services
                     .Select(c => c.Project)
                     .ToList();
         }
+
+        public ProjectContributor GetProjectContributor(Project project, Guid userId)
+        {
+            return Repository.All()
+                    .Where(c => c.ProjectId == project.ProjectId
+                             && c.UserId == userId)
+                    .SingleOrDefault();
+        }
     }
 }

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Arragro.Common.BusinessRules;
+using System;
 using System.Linq;
+using Timesheets.BusinessLayer.Domain;
 using Timesheets.DataLayer.Models;
 using Xunit;
 
@@ -116,6 +118,44 @@ namespace Timesheets.Tests.Domain.UnitTests
                 Assert.True(projectInvitation.InvitationAccepted.HasValue);
                 Assert.False(projectInvitation.InvitationAccepted.Value);
             }
+        }
+
+        [Fact]
+        public void User_security_cannot_invite_user()
+        {
+            Assert.Throws<RulesException>(
+                () =>
+                {
+                    using (var testHelper = new TestHelper())
+                    {
+                        var user = TestHelper.GetFoo();
+                        var userProjects = testHelper.GetUserProjects(user);
+                        var project = userProjects.AddProject(new Project("Test 1", user.Id));
+
+                        var invitationAdministration = testHelper.GetUserProjectInvitations(user);
+                        var projectInvitation = invitationAdministration.InviteUserToProject(project, TestHelper.VALID_EMAIL_ADDRESS);
+
+                        // Will be set by the email service once the email has gone
+                        var backEndAdministration = testHelper.GetBackEndAdministration();
+                        backEndAdministration.SetProjectInvitationSent(projectInvitation);
+
+                        var invitee = TestHelper.GetBar();
+                        invitee.UserName = TestHelper.VALID_EMAIL_ADDRESS;
+                        invitationAdministration = testHelper.GetUserProjectInvitations(invitee);
+                        var projectContributor = invitationAdministration.AcceptInvitation(projectInvitation.InvitationCode);
+
+                        try
+                        {
+                            invitationAdministration = testHelper.GetUserProjectInvitations(invitee);
+                            invitationAdministration.InviteUserToProject(project, TestHelper.VALID_EMAIL_ADDRESS);
+                        }
+                        catch (RulesException ex)
+                        {
+                            Assert.Equal(ex.Errors[0].Message, SecurityRules.USER_IS_NOT_AUTHORISED);
+                            throw;
+                        }
+                    }
+                });
         }
     }
 }

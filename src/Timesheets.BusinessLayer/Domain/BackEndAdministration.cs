@@ -13,6 +13,8 @@ namespace Timesheets.BusinessLayer.Domain
         public BackEndAdministration(
             ProjectInvitationService projectInvitationService)
         {
+            if (projectInvitationService == null) throw new ArgumentNullException("projectInvitationService");
+
             _projectInvitationService = projectInvitationService;
         }
 

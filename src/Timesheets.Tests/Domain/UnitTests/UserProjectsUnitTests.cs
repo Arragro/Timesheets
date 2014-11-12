@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Timesheets.Tests.Domain.UnitTests
 {
-    public class UserProjectAdministrationUnitTests
+    public class UserProjectsUnitTests
     {
         private void LoadProjects(
             UserProjects userProjectAdministration,
@@ -67,7 +67,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                 new ParameterOverride("user", fooUser),
                 new ParameterOverride("projectService", projectService));
 
-            Assert.Throws<RulesException<Project>>(
+            Assert.Throws<RulesException>(
                 () =>
                 {
                     try
@@ -84,7 +84,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                     }
                     catch (RulesException ex)
                     {
-                        Assert.Equal(ex.Errors[0].Message, UserProjects.USER_IS_NOT_AUTHORISED);
+                        Assert.Equal(ex.Errors[0].Message, SecurityRules.USER_IS_NOT_AUTHORISED);
                         throw ex;
                     }
                 });
@@ -139,7 +139,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                     }
                     catch (RulesException ex)
                     {
-                        Assert.Equal(ex.Errors[0].Message, UserProjects.USER_IS_NOT_AUTHORISED);
+                        Assert.Equal(ex.Errors[0].Message, UserProjects.USER_IS_NOT_THE_PRESENT_OWNER);
                         throw ex;
                     }
                 });
