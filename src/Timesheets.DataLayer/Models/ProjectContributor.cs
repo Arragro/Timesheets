@@ -46,17 +46,6 @@ namespace Timesheets.DataLayer.Models
             Project = projectInvitation.Project;
         }
 
-        public void ClearProjectForService()
-        {
-            Project = null;
-        }
-
-        public void SetProject(Project project)
-        {
-            if (project == null) throw new ArgumentNullException("project");
-            Project = project;
-        }
-
         public void SetProjectContributorId()
         {
             if (ProjectContributorId != default(Guid)) throw new Exception("The ProjectContributorId is already set");

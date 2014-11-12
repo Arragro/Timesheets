@@ -41,11 +41,6 @@ namespace Timesheets.DataLayer.Models
             ProjectInvitationId = Guid.NewGuid();
         }
 
-        public void ClearProjectForService()
-        {
-            Project = null;
-        }
-
         public void SetProject(Project project)
         {
             if (project == null) throw new ArgumentNullException("project");

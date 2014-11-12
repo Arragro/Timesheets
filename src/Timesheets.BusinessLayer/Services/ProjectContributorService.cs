@@ -50,8 +50,6 @@ namespace Timesheets.BusinessLayer.Services
 
         public override ProjectContributor InsertOrUpdate(ProjectContributor model, Guid userId)
         {
-            model.ClearProjectForService();
-
             var add = default(Guid) == model.ProjectContributorId;
             if (add) model.SetProjectContributorId();
             AddOrUpdateAudit(model, userId, add);

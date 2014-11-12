@@ -37,11 +37,10 @@ namespace Timesheets.Tests.Models
                                 new ProjectInvitation(
                                     project, string.Empty);
                         projectInvitation.SetUserId(Guid.NewGuid());
-                        projectInvitation.SetProject(project);
+                        projectInvitation.SetProject(null);
 
                         var projectContributor =
                             new ProjectContributor(projectInvitation);
-                        projectContributor.SetProject(null);
                     }
                     catch (ArgumentNullException ex)
                     {
