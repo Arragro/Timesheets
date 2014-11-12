@@ -94,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Domain\UnitTests\BackEndAdministrationUnitTests.cs" />
+    <Compile Include="Domain\UnitTests\UserProjectContributorUnitTests.cs" />
     <Compile Include="Domain\UnitTests\UserProjectInvitationsTests.cs" />
     <Compile Include="Domain\UnitTests\UserProjectsUnitTests.cs" />
     <Compile Include="Domain\UnitTests\UserTimesheetEntriesUnitTests.cs" />
