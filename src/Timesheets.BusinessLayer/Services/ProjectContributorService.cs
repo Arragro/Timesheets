@@ -42,12 +42,6 @@ namespace Timesheets.BusinessLayer.Services
                     RulesException.ErrorForModel(CONTRIBUTOR_MUST_HAVE_DATES_THAT_ARE_WITHIN_THE_PROJECT_DATES);
         }
 
-        private void ValidateUserAlreadyExists(ProjectContributor model)
-        {
-            if (Repository.All().Any(c => c.ProjectId == model.ProjectId && c.UserId == model.UserId))
-                RulesException.ErrorForModel(CONTRIBUTOR_ALREADY_EXISTS);
-        }
-
         public override ProjectContributor InsertOrUpdate(ProjectContributor model, Guid userId)
         {
             var add = default(Guid) == model.ProjectContributorId;
@@ -63,7 +57,6 @@ namespace Timesheets.BusinessLayer.Services
         {
             ValidateStartEndDate(model);
             ValidAgainstProjectStartEndDates(model);
-            ValidateUserAlreadyExists(model);
 
             if (RulesException.Errors.Any()) throw RulesException;
         }
@@ -78,10 +71,21 @@ namespace Timesheets.BusinessLayer.Services
 
         public ProjectContributor GetProjectContributor(Project project, Guid userId)
         {
-            return Repository.All()
+            var projectContributor = Repository.All()
                     .Where(c => c.ProjectId == project.ProjectId
                              && c.UserId == userId)
                     .SingleOrDefault();
+            if (projectContributor != null)
+                projectContributor.SetProject(project);
+            return projectContributor;
+        }
+
+        public IEnumerable<ProjectContributor> GetProjectContributors(Project project)
+        {
+            var projectContributors = Repository.All().Where(c => c.ProjectId == project.ProjectId);
+            foreach (var projectContributor in projectContributors)
+                projectContributor.SetProject(project);
+            return projectContributors;
         }
     }
 }

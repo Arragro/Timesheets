@@ -68,6 +68,12 @@ namespace Timesheets.Tests
                 new ParameterOverride("user", user));
         }
 
+        public UserProjectContributor GetUserProjectContributor(IUser<Guid> user)
+        {
+            return _unityContainer.Resolve<UserProjectContributor>(
+                new ParameterOverride("user", user));
+        }
+
         public CacheSettings GetCacheSettings()
         {
             return _unityContainer.Resolve<CacheSettings>();

@@ -84,5 +84,10 @@ namespace Timesheets.DataLayer.Models
             PurchaseOrderNumber = purchaseOrderNumber;
             HourlyRate = hourlyRate;
         }
+
+        public void SetProject(Project project)
+        {
+            Project = project;
+        }
     }
 }

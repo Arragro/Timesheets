@@ -151,7 +151,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                         }
                         catch (RulesException ex)
                         {
-                            Assert.Equal(ex.Errors[0].Message, SecurityRules.USER_IS_NOT_AUTHORISED);
+                            Assert.Equal(ex.Errors[0].Message, SecurityRules.USER_IS_NOT_AUTHORISED_TO_MODIFY);
                             throw;
                         }
                     }

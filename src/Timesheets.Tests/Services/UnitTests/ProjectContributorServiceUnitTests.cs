@@ -157,47 +157,5 @@ namespace Timesheets.Tests.Services.UnitTests
                     });
             }
         }
-
-        [Fact]
-        public void ProjectContributionService_UserId_already_invited()
-        {
-            using (var testHelper = new TestHelper())
-            {
-                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetFoo());
-                var projectContributorService = testHelper.GetProjectContributorService();
-
-                var project = new Project("Test", Guid.NewGuid());
-                userProjectAdministration.AddProject(project);
-
-                var userId = Guid.NewGuid();
-
-                var projectInvitation =
-                    new ProjectInvitation(
-                        project, TestHelper.VALID_EMAIL_ADDRESS);
-                projectInvitation.SetUserId(userId);
-                projectInvitation.SetProjectInvitationId();
-
-                var projectContributor = new ProjectContributor(projectInvitation);
-
-                projectContributorService.ValidateAndInsertOrUpdate(projectContributor, userId);
-                projectContributorService.SaveChanges();
-
-                Assert.Throws<RulesException<ProjectContributor>>(
-                    () =>
-                    {
-                        try
-                        {
-                            var newProjectContributor = new ProjectContributor(projectInvitation);
-                            projectContributorService.ValidateModel(newProjectContributor);
-                        }
-                        catch (RulesException ex)
-                        {
-                            Assert.Equal(1, ex.Errors.Count);
-                            Assert.NotNull(ex.Errors.SingleOrDefault(x => x.Message == ProjectContributorService.CONTRIBUTOR_ALREADY_EXISTS));
-                            throw ex;
-                        }
-                    });
-            }
-        }
     }
 }
