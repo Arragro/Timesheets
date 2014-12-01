@@ -97,6 +97,11 @@ namespace Timesheets.Tests
             return GetUser(Guid.NewGuid(), "Bar");
         }
 
+        public static IUser<Guid> GetBoo()
+        {
+            return GetUser(Guid.NewGuid(), "Boo");
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)

@@ -53,6 +53,11 @@ namespace Timesheets.BusinessLayer.Domain
             return _projectInvitationService.GetProjectInvitations(project);
         }
 
+        public void DeleteProjectInvitation(ProjectInvitation projectInvitation)
+        {
+            _projectInvitationService.DeleteProjectInvitation(projectInvitation);
+        }
+
         public ProjectInvitation InviteUserToProject(
             Project project, string emailAddress)
         {

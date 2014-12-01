@@ -102,6 +102,11 @@ namespace Timesheets.BusinessLayer.Services
             return model;
         }
 
+        public void DeleteProjectInvitation(ProjectInvitation projectInvitation)
+        {
+            Repository.Delete(projectInvitation.ProjectInvitationId);
+        }
+
         public IEnumerable<ProjectInvitation> GetProjectInvitations(Project project)
         {
             var projectInvitations = Repository.All().Where(i => i.ProjectId == project.ProjectId).ToList();

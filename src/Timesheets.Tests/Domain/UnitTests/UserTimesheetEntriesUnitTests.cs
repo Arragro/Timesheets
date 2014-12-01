@@ -86,7 +86,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                 LoadTimeSheetEntries(userTimeSheetEntries, fooUser);
 
                 var timesheetEntries = userTimeSheetEntries.GetLastMonthsTimesheetEntries();
-                Assert.Equal(31, timesheetEntries.Count());
+                Assert.Equal(30, timesheetEntries.Count());
             }
         }
 

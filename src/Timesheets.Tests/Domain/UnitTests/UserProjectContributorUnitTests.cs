@@ -121,7 +121,7 @@ namespace Timesheets.Tests.Domain.UnitTests
         }
 
         [Fact]
-        public void change_of_project_contributor_role()
+        public void change_of_project_contributor_role_by_owner()
         {
             using (var testHelper = new TestHelper())
             {
@@ -143,6 +143,49 @@ namespace Timesheets.Tests.Domain.UnitTests
 
                 Assert.Equal(barProjectContributor.ContributorRole, ContributorRole.User);
             }
+        }
+
+        [Fact]
+        public void change_of_project_contributor_role_by_administrator()
+        {
+            using (var testHelper = new TestHelper())
+            {
+                var fooUser = TestHelper.GetFoo();
+                var barUser = TestHelper.GetBar();
+
+                var barProjectContributor = GetProjectContributor(testHelper, fooUser, barUser);
+                var userProjectContributor = testHelper.GetUserProjectContributor(fooUser);
+
+                barProjectContributor = userProjectContributor.ChangeProjectContributorsRole(barProjectContributor, ContributorRole.Administrator);
+
+                Assert.Equal(barProjectContributor.ContributorRole, ContributorRole.Administrator);
+            }
+        }
+
+        [Fact]
+        public void change_of_project_contributor_role_fails_when_not_adminiatrator()
+        {
+            Assert.Throws<RulesException>(() =>
+                {
+                    try
+                    {
+                        using (var testHelper = new TestHelper())
+                        {
+                            var fooUser = TestHelper.GetFoo();
+                            var barUser = TestHelper.GetBar();
+
+                            var barProjectContributor = GetProjectContributor(testHelper, fooUser, barUser);
+                            var userProjectContributor = testHelper.GetUserProjectContributor(barUser);
+
+                            barProjectContributor = userProjectContributor.ChangeProjectContributorsRole(barProjectContributor, ContributorRole.Administrator);
+                        }
+                    }
+                    catch(RulesException ex)
+                    {
+                        Assert.Equal(ex.Errors[0].Message, SecurityRules.USER_IS_NOT_AUTHORISED_TO_MODIFY);
+                        throw;
+                    }
+                });
         }
     }
 }

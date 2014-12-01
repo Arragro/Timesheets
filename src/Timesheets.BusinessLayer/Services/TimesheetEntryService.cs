@@ -68,7 +68,7 @@ namespace Timesheets.BusinessLayer.Services
 
         public IEnumerable<TimesheetEntry> GetLastMonthsTimesheets(Guid userId)
         {
-            var date = DateTime.Now.AddMonths(-1).Date;
+            var date = DateTime.Now.AddDays(-30).Date;
             return Repository.All()
                 .Where(t => t.UserId == userId
                          && t.Date > date).ToList();
