@@ -93,6 +93,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DomainObjectBuilder.cs" />
     <Compile Include="Domain\UnitTests\BackEndAdministrationUnitTests.cs" />
     <Compile Include="Domain\UnitTests\UserProjectContributorUnitTests.cs" />
     <Compile Include="Domain\UnitTests\UserProjectInvitationsTests.cs" />
@@ -126,13 +127,13 @@
       <Project>{4632b3e2-361c-4db4-abe1-13c53255b088}</Project>
       <Name>Timesheets.BusinessLayer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Timesheets.DataLayer.EF6\Timesheets.DataLayer.EF6.csproj">
+      <Project>{6c20af03-b889-41c7-8700-71c3fb621fd6}</Project>
+      <Name>Timesheets.DataLayer.EF6</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Timesheets.DataLayer\Timesheets.DataLayer.csproj">
       <Project>{b7bc5e15-e094-432e-bc0d-c1eb07e53c82}</Project>
       <Name>Timesheets.DataLayer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Timesheets.Persistance.EF6\Timesheets.Persistance.EF6.csproj">
-      <Project>{6c20af03-b889-41c7-8700-71c3fb621fd6}</Project>
-      <Name>Timesheets.Persistance.EF6</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

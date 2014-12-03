@@ -12,25 +12,6 @@ namespace Timesheets.Tests.Domain.UnitTests
 {
     public class UserProjectsUnitTests
     {
-        private void LoadProjects(
-            UserProjects userProjectAdministration,
-            Guid ownerUserId,
-            int numberOfProjects = 2)
-        {
-            var counter = 0;
-            while (counter < numberOfProjects)
-            {
-                var project = new Project(
-                    "Test " + (counter + 1).ToString(),
-                    ownerUserId,
-                    startDate: DateTime.Now,
-                    endDate: DateTime.Now.AddDays(1));
-
-                userProjectAdministration.AddProject(project);
-                counter++;
-            }
-        }
-
         [Fact]
         public void Project_update_fails_when_project_has_not_been_saved()
         {
@@ -175,7 +156,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                 var fooUser = TestHelper.GetFoo();
                 var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetFoo());
 
-                LoadProjects(userProjectAdministration, Guid.NewGuid());
+                DomainObjectBuilder.LoadProjects(userProjectAdministration, Guid.NewGuid());
 
                 var userProjects = userProjectAdministration.GetUserProjects();
                 Assert.Equal(2, userProjects.Count());
@@ -193,8 +174,8 @@ namespace Timesheets.Tests.Domain.UnitTests
                 var barUser = TestHelper.GetBar();
                 var barUserProjectAdministration = testHelper.GetUserProjects(TestHelper.GetFoo());
 
-                LoadProjects(fooUserProjectAdministration, fooUser.Id);
-                LoadProjects(barUserProjectAdministration, fooUser.Id);
+                DomainObjectBuilder.LoadProjects(fooUserProjectAdministration, fooUser.Id);
+                DomainObjectBuilder.LoadProjects(barUserProjectAdministration, fooUser.Id);
 
                 var userProjects = barUserProjectAdministration.GetUserProjects();
                 Assert.Equal(2, userProjects.Count());

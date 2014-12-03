@@ -9,22 +9,6 @@ namespace Timesheets.Tests.Domain.UnitTests
 {
     public class UserTimesheetEntriesUnitTests
     {
-        private void LoadTimeSheetEntries(
-            UserTimesheetEntries userTimesheetEntries,
-            IUser<Guid> user,
-            int numberOfTimesheets = 31)
-        {
-            var counter = 0;
-            while (counter < numberOfTimesheets)
-            {
-                var timesheetEntry = new TimesheetEntry(
-                    user.Id, DateTime.Now.Date.AddDays(0 - counter),
-                    8, "Foo Entry");
-                userTimesheetEntries.AddTimesheetEntry(timesheetEntry);
-                counter++;
-            }
-        }
-
         [Fact]
         public void UserTimesheetEntries_instantiation_throws_error_when_null_services_supplied()
         {
@@ -83,7 +67,7 @@ namespace Timesheets.Tests.Domain.UnitTests
             {
                 var fooUser = TestHelper.GetFoo();
                 var userTimeSheetEntries = testHelper.GetUserTimesheetEntries(fooUser);
-                LoadTimeSheetEntries(userTimeSheetEntries, fooUser);
+                DomainObjectBuilder.LoadTimeSheetEntries(userTimeSheetEntries, fooUser);
 
                 var timesheetEntries = userTimeSheetEntries.GetLastMonthsTimesheetEntries();
                 Assert.Equal(30, timesheetEntries.Count());
@@ -97,7 +81,7 @@ namespace Timesheets.Tests.Domain.UnitTests
             {
                 var fooUser = TestHelper.GetFoo();
                 var userTimeSheetEntries = testHelper.GetUserTimesheetEntries(fooUser);
-                LoadTimeSheetEntries(userTimeSheetEntries, fooUser);
+                DomainObjectBuilder.LoadTimeSheetEntries(userTimeSheetEntries, fooUser);
 
                 var timesheetEntries =
                     userTimeSheetEntries.GetRangeOfTimesheetEntries(
@@ -115,11 +99,11 @@ namespace Timesheets.Tests.Domain.UnitTests
 
                 var fooUser = TestHelper.GetFoo();
                 var fooUserTimeSheetEntries = testHelper.GetUserTimesheetEntries(fooUser);
-                LoadTimeSheetEntries(fooUserTimeSheetEntries, fooUser, numberOfUserTimesheets);
+                DomainObjectBuilder.LoadTimeSheetEntries(fooUserTimeSheetEntries, fooUser, numberOfTimesheets: numberOfUserTimesheets);
 
                 var barUser = TestHelper.GetBar();
                 var barUserTimeSheetEntries = testHelper.GetUserTimesheetEntries(barUser);
-                LoadTimeSheetEntries(barUserTimeSheetEntries, barUser, numberOfUserTimesheets);
+                DomainObjectBuilder.LoadTimeSheetEntries(barUserTimeSheetEntries, barUser, numberOfTimesheets: numberOfUserTimesheets);
 
                 Assert.Equal(numberOfUserTimesheets,
                     fooUserTimeSheetEntries.GetLastMonthsTimesheetEntries().Count());

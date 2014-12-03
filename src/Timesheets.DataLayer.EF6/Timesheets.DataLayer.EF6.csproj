@@ -7,8 +7,8 @@
     <ProjectGuid>{6C20AF03-B889-41C7-8700-71C3FB621FD6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Timesheets.Persistance.EF6</RootNamespace>
-    <AssemblyName>Timesheets.Persistance.EF6</AssemblyName>
+    <RootNamespace>Timesheets.DataLayer.EF6</RootNamespace>
+    <AssemblyName>Timesheets.DataLayer.EF6</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
