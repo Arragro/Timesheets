@@ -1,6 +1,7 @@
 ﻿using Arragro.Common.BusinessRules;
 using Microsoft.AspNet.Identity;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Timesheets.BusinessLayer.Domain;
 using Timesheets.DataLayer.Enums;
@@ -11,27 +12,6 @@ namespace Timesheets.Tests.Domain.UnitTests
 {
     public class UserProjectContributorUnitTests
     {
-        private ProjectContributor GetProjectContributor(
-            TestHelper testHelper, IUser<Guid> fooUser, IUser<Guid> barUser)
-        {
-            var userProjects = testHelper.GetUserProjects(fooUser);
-            var project = userProjects.AddProject(new Project("Test 1", fooUser.Id));
-
-            var invitationAdministration = testHelper.GetUserProjectInvitations(fooUser);
-            var projectInvitation = invitationAdministration.InviteUserToProject(project, TestHelper.VALID_EMAIL_ADDRESS);
-
-            // Will be set by the email service once the email has gone
-            var backEndAdministration = testHelper.GetBackEndAdministration();
-            backEndAdministration.SetProjectInvitationSent(projectInvitation);
-
-            var invitee = barUser;
-            invitee.UserName = TestHelper.VALID_EMAIL_ADDRESS;
-            invitationAdministration = testHelper.GetUserProjectInvitations(invitee);
-            var projectContributor = invitationAdministration.AcceptInvitation(projectInvitation.InvitationCode);
-
-            return projectContributor;
-        }
-
         [Fact]
         public void change_of_project_owner_fails_with_invalid_project()
         {
@@ -67,14 +47,11 @@ namespace Timesheets.Tests.Domain.UnitTests
                     using (var testHelper = new TestHelper())
                     {
                         var fooUser = TestHelper.GetFoo();
-                        var barUser = TestHelper.GetBar();
+                        var result = DomainObjectBuilder.CreateAndGetProjectContributors(
+                            testHelper, fooUser, new[] { TestHelper.VALID_EMAIL_ADDRESS }).First();
 
-                        GetProjectContributor(testHelper, fooUser, barUser);
                         var userProjectContributor = testHelper.GetUserProjectContributor(fooUser);
-
-                        var userProjects = testHelper.GetUserProjects(fooUser);
-                        var project = userProjects.GetUserProjects().First();
-                        var projectContributor = userProjectContributor.GetProjectContributor(project, fooUser.Id);
+                        var projectContributor = userProjectContributor.GetProjectContributor(result.Item1, fooUser.Id);
 
                         try
                         {
@@ -98,14 +75,12 @@ namespace Timesheets.Tests.Domain.UnitTests
                     using (var testHelper = new TestHelper())
                     {
                         var fooUser = TestHelper.GetFoo();
-                        var barUser = TestHelper.GetBar();
-
-                        GetProjectContributor(testHelper, fooUser, barUser);
-                        var userProjectContributor = testHelper.GetUserProjectContributor(fooUser);
+                        var result = DomainObjectBuilder.CreateAndGetProjectContributors(
+                            testHelper, fooUser, new[] { TestHelper.VALID_EMAIL_ADDRESS }).First();
 
                         var userProjects = testHelper.GetUserProjects(fooUser);
                         var project = userProjects.GetUserProjects().First();
-                        userProjectContributor = testHelper.GetUserProjectContributor(barUser);
+                        var userProjectContributor = testHelper.GetUserProjectContributor(result.Item4);
 
                         try
                         {
@@ -126,10 +101,10 @@ namespace Timesheets.Tests.Domain.UnitTests
             using (var testHelper = new TestHelper())
             {
                 var fooUser = TestHelper.GetFoo();
-                var barUser = TestHelper.GetBar();
-
-                var barProjectContributor = GetProjectContributor(testHelper, fooUser, barUser);
+                var result = DomainObjectBuilder.CreateAndGetProjectContributors(
+                    testHelper, fooUser, new[] { TestHelper.VALID_EMAIL_ADDRESS }).First();
                 var userProjectContributor = testHelper.GetUserProjectContributor(fooUser);
+                var barProjectContributor = result.Item3;
 
                 barProjectContributor = userProjectContributor.ChangeProjectContributorsRole(barProjectContributor, ContributorRole.Administrator);
 
@@ -151,10 +126,10 @@ namespace Timesheets.Tests.Domain.UnitTests
             using (var testHelper = new TestHelper())
             {
                 var fooUser = TestHelper.GetFoo();
-                var barUser = TestHelper.GetBar();
-
-                var barProjectContributor = GetProjectContributor(testHelper, fooUser, barUser);
+                var result = DomainObjectBuilder.CreateAndGetProjectContributors(
+                    testHelper, fooUser, new[] { TestHelper.VALID_EMAIL_ADDRESS }).First();
                 var userProjectContributor = testHelper.GetUserProjectContributor(fooUser);
+                var barProjectContributor = result.Item3;
 
                 barProjectContributor = userProjectContributor.ChangeProjectContributorsRole(barProjectContributor, ContributorRole.Administrator);
 
@@ -172,11 +147,11 @@ namespace Timesheets.Tests.Domain.UnitTests
                         using (var testHelper = new TestHelper())
                         {
                             var fooUser = TestHelper.GetFoo();
-                            var barUser = TestHelper.GetBar();
+                            var result = DomainObjectBuilder.CreateAndGetProjectContributors(
+                                testHelper, fooUser, new[] { TestHelper.VALID_EMAIL_ADDRESS }).First();
+                            var userProjectContributor = testHelper.GetUserProjectContributor(result.Item4);
 
-                            var barProjectContributor = GetProjectContributor(testHelper, fooUser, barUser);
-                            var userProjectContributor = testHelper.GetUserProjectContributor(barUser);
-
+                            var barProjectContributor = result.Item3;
                             barProjectContributor = userProjectContributor.ChangeProjectContributorsRole(barProjectContributor, ContributorRole.Administrator);
                         }
                     }

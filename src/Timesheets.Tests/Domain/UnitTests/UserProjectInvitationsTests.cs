@@ -22,6 +22,13 @@ namespace Timesheets.Tests.Domain.UnitTests
                 Assert.False(projectInvitation.InvitationAccepted.Value);
         }
 
+        private void ValidateProjectContributor(
+            ProjectInvitation projectInvitation, ProjectContributor projectContributor)
+        {
+            Assert.NotNull(projectContributor);
+            Assert.Equal(projectInvitation.UserId, projectContributor.UserId);
+        }
+
         [Fact]
         public void UserProjectAdministration_Invite_User_to_Project()
         {
@@ -76,29 +83,22 @@ namespace Timesheets.Tests.Domain.UnitTests
             {
                 var user = TestHelper.GetFoo();
                 var userProjects = testHelper.GetUserProjects(user);
-                var userProjectInvitations = testHelper.GetUserProjectInvitations(user);
-                var backEndAdministration = testHelper.GetBackEndAdministration();
 
                 var userEmails = new[] { TestHelper.VALID_EMAIL_ADDRESS };
 
                 var project = userProjects.AddProject(new Project("Test 1", user.Id));
 
-                var projectInvitations = 
-                    DomainObjectBuilder.LoadProjectInvitation(
-                        project, userProjectInvitations, backEndAdministration, userEmails);
-
-                var results = DomainObjectBuilder.AcceptProjectInvitations(testHelper, project, projectInvitations, userEmails);
+                var results = DomainObjectBuilder.AcceptRejectProjectInvitations(
+                    testHelper, user, project, userEmails);
 
                 for (int i = 0; i < results.Count(); i++)
                 {
                     var emailAddress = userEmails[i];
                     var projectInvitation = results.ElementAt(i).Item1;
-                    var contributor = results.ElementAt(i).Item2;
+                    var projectContributor = results.ElementAt(i).Item2;
 
                     ValidateProjectInvitation(project, projectInvitation, emailAddress);
-
-                    Assert.NotNull(contributor);
-                    Assert.Equal(projectInvitation.UserId, contributor.UserId);
+                    ValidateProjectContributor(projectInvitation, projectContributor);
                 }
             }
         }
@@ -110,27 +110,16 @@ namespace Timesheets.Tests.Domain.UnitTests
             {
                 var user = TestHelper.GetFoo();
                 var userProjectAdministration = testHelper.GetUserProjects(user);
-                var backEndAdministration = testHelper.GetBackEndAdministration();
-                var userProjectInvitations = testHelper.GetUserProjectInvitations(user);
-                var invitationAdministration = testHelper.GetUserProjectInvitations(user);
 
                 var userEmails = new[] { TestHelper.VALID_EMAIL_ADDRESS };
                 var project = userProjectAdministration.AddProject(new Project("Test 1", user.Id));
-                
-                var projectInvitations =
-                    DomainObjectBuilder.LoadProjectInvitation(
-                        project, userProjectInvitations, backEndAdministration, userEmails);
 
-                foreach (var projectInvitation in projectInvitations)
+                var results = DomainObjectBuilder.AcceptRejectProjectInvitations(
+                    testHelper, user, project, userEmails, false);
+
+                foreach (var result in results)
                 {
-                    var invitee = TestHelper.GetBar();
-                    invitee.UserName = TestHelper.VALID_EMAIL_ADDRESS;
-                    invitationAdministration = testHelper.GetUserProjectInvitations(invitee);
-                    invitationAdministration.RejectInvitation(projectInvitation.InvitationCode);
-
-                    var rejectedProjectInvitation = invitationAdministration.GetProjectInvitations(project).First(i => i.InvitationCode == projectInvitation.InvitationCode);
-
-                    ValidateProjectInvitation(project, rejectedProjectInvitation, TestHelper.VALID_EMAIL_ADDRESS, false);
+                    ValidateProjectInvitation(project, result.Item1, TestHelper.VALID_EMAIL_ADDRESS, false);
                 }
             }
         }
@@ -146,22 +135,14 @@ namespace Timesheets.Tests.Domain.UnitTests
                         var user = TestHelper.GetFoo();
                         var userProjects = testHelper.GetUserProjects(user);
                         var project = userProjects.AddProject(new Project("Test 1", user.Id));
-
-                        var invitationAdministration = testHelper.GetUserProjectInvitations(user);
-                        var projectInvitation = invitationAdministration.InviteUserToProject(project, TestHelper.VALID_EMAIL_ADDRESS);
-
-                        // Will be set by the email service once the email has gone
-                        var backEndAdministration = testHelper.GetBackEndAdministration();
-                        backEndAdministration.SetProjectInvitationSent(projectInvitation);
-
                         var invitee = TestHelper.GetBar();
-                        invitee.UserName = TestHelper.VALID_EMAIL_ADDRESS;
-                        invitationAdministration = testHelper.GetUserProjectInvitations(invitee);
-                        var projectContributor = invitationAdministration.AcceptInvitation(projectInvitation.InvitationCode);
 
+                        DomainObjectBuilder.AcceptRejectProjectInvitations(
+                            testHelper, user, project, new[] { TestHelper.VALID_EMAIL_ADDRESS });
+                            
                         try
                         {
-                            invitationAdministration = testHelper.GetUserProjectInvitations(invitee);
+                            var invitationAdministration = testHelper.GetUserProjectInvitations(invitee);
                             invitationAdministration.InviteUserToProject(project, TestHelper.VALID_EMAIL_ADDRESS);
                         }
                         catch (RulesException ex)

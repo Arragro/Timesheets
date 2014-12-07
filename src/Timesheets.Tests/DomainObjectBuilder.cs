@@ -45,14 +45,17 @@ namespace Timesheets.Tests
             }
         }
 
-        public static IEnumerable<ProjectInvitation> LoadProjectInvitation(
+        private static IEnumerable<ProjectInvitation> LoadProjectInvitations(
+            TestHelper testHelper,
+            IUser<Guid> user,
             Project project,
-            UserProjectInvitations userProjectInvitations,
-            BackEndAdministration backEndAdministration,
             string[] emailAddresses,
             bool sendInvitations = true)
         {
             var projectInvitations = new List<ProjectInvitation>();
+            
+            var userProjectInvitations = testHelper.GetUserProjectInvitations(user);
+            var backEndAdministration = testHelper.GetBackEndAdministration();
 
             foreach (var emailAddress in emailAddresses)
             {
@@ -64,13 +67,17 @@ namespace Timesheets.Tests
             return projectInvitations;
         }
 
-        public static IEnumerable<Tuple<ProjectInvitation, ProjectContributor>> AcceptProjectInvitations(
+        public static IEnumerable<Tuple<ProjectInvitation, ProjectContributor, IUser<Guid>>> AcceptRejectProjectInvitations(
             TestHelper testHelper,
-            Project project,            
-            IEnumerable<ProjectInvitation> projectInvitations,
-            string[] emailAddresses)
+            IUser<Guid> user,
+            Project project,
+            string[] emailAddresses,
+            bool accept = true)
         {
-            var output = new List<Tuple<ProjectInvitation, ProjectContributor>>();
+            var output = new List<Tuple<ProjectInvitation, ProjectContributor, IUser<Guid>>>();
+
+            var projectInvitations = LoadProjectInvitations(
+                testHelper, user, project, emailAddresses);
 
             for (int i = 0; i < projectInvitations.Count(); i++)
             {
@@ -81,12 +88,28 @@ namespace Timesheets.Tests
                 invitee.UserName = emailAddress;
 
                 var userProjectInvitations = testHelper.GetUserProjectInvitations(invitee);
-                var contributor = userProjectInvitations.AcceptInvitation(projectInvitation.InvitationCode);
+                ProjectContributor contributor = null;
+                if (accept)
+                    contributor = userProjectInvitations.AcceptInvitation(projectInvitation.InvitationCode);
+                else
+                    userProjectInvitations.RejectInvitation(projectInvitation.InvitationCode);
                 projectInvitation = userProjectInvitations.GetProjectInvitations(project).First(x => x.InvitationCode == projectInvitation.InvitationCode);
 
-                output.Add(new Tuple<ProjectInvitation, ProjectContributor>(projectInvitation, contributor));
+                output.Add(new Tuple<ProjectInvitation, ProjectContributor, IUser<Guid>>(projectInvitation, contributor, invitee));
             }
             return output;
+        }
+
+        public static IEnumerable<Tuple<Project, ProjectInvitation, ProjectContributor, IUser<Guid>>> CreateAndGetProjectContributors(
+            TestHelper testHelper, IUser<Guid> fooUser, string[] emailAddresses)
+        {
+            var userProjectAdministration = testHelper.GetUserProjects(fooUser);
+            var project = userProjectAdministration.AddProject(new Project("Test 1", fooUser.Id));
+
+            var results = DomainObjectBuilder.AcceptRejectProjectInvitations(
+                    testHelper, fooUser, project, emailAddresses);
+
+            return results.Select(x => new Tuple<Project, ProjectInvitation, ProjectContributor, IUser<Guid>>(project, x.Item1, x.Item2, x.Item3));
         }
     }
 }
