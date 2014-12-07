@@ -113,7 +113,7 @@ namespace Timesheets.Tests.Services.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetFoo());
+                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetOwnerUser());
                 var projectInvitationService = testHelper.GetProjectInvitationService();
 
                 var project = new Project("Test", Guid.NewGuid());
@@ -155,7 +155,7 @@ namespace Timesheets.Tests.Services.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetFoo());
+                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetOwnerUser());
                 var projectInvitationService = testHelper.GetProjectInvitationService();
 
                 var project = new Project("Test", Guid.NewGuid());

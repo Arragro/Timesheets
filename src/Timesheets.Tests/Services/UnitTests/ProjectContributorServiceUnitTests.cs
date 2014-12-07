@@ -13,7 +13,7 @@ namespace Timesheets.Tests.Services.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetFoo());
+                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetOwnerUser());
 
                 var project = new Project("Test", Guid.NewGuid(), startDate: DateTime.Now, endDate: DateTime.Now.AddDays(10));
                 project = userProjectAdministration.AddProject(project);

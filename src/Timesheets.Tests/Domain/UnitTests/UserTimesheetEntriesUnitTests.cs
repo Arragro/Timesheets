@@ -19,7 +19,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                     {
                         try
                         {
-                            new UserTimesheetEntries(TestHelper.GetFoo(), null, null);
+                            new UserTimesheetEntries(TestHelper.GetOwnerUser(), null, null);
                         }
                         catch (ArgumentNullException ex)
                         {
@@ -33,7 +33,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                         try
                         {
                             new UserTimesheetEntries(
-                                TestHelper.GetFoo(), testHelper.GetCacheSettings(), null);
+                                TestHelper.GetOwnerUser(), testHelper.GetCacheSettings(), null);
                         }
                         catch (ArgumentNullException ex)
                         {
@@ -49,11 +49,11 @@ namespace Timesheets.Tests.Domain.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var fooUser = TestHelper.GetFoo();
-                var userTimeSheetEntries = testHelper.GetUserTimesheetEntries(fooUser);
+                var ownerUser = TestHelper.GetOwnerUser();
+                var userTimeSheetEntries = testHelper.GetUserTimesheetEntries(ownerUser);
 
                 var timesheetEntry = new TimesheetEntry(
-                    fooUser.Id, DateTime.Now.Date, 8, "Foo Entry");
+                    ownerUser.Id, DateTime.Now.Date, 8, "Foo Entry");
 
                 timesheetEntry = userTimeSheetEntries.AddTimesheetEntry(timesheetEntry);
                 Assert.NotEqual(default(Guid), timesheetEntry.TimesheetEntryId);
@@ -65,9 +65,9 @@ namespace Timesheets.Tests.Domain.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var fooUser = TestHelper.GetFoo();
-                var userTimeSheetEntries = testHelper.GetUserTimesheetEntries(fooUser);
-                DomainObjectBuilder.LoadTimeSheetEntries(userTimeSheetEntries, fooUser);
+                var ownerUser = TestHelper.GetOwnerUser();
+                var userTimeSheetEntries = testHelper.GetUserTimesheetEntries(ownerUser);
+                DomainObjectBuilder.LoadTimeSheetEntries(userTimeSheetEntries, ownerUser);
 
                 var timesheetEntries = userTimeSheetEntries.GetLastMonthsTimesheetEntries();
                 Assert.Equal(30, timesheetEntries.Count());
@@ -79,9 +79,9 @@ namespace Timesheets.Tests.Domain.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var fooUser = TestHelper.GetFoo();
-                var userTimeSheetEntries = testHelper.GetUserTimesheetEntries(fooUser);
-                DomainObjectBuilder.LoadTimeSheetEntries(userTimeSheetEntries, fooUser);
+                var ownerUser = TestHelper.GetOwnerUser();
+                var userTimeSheetEntries = testHelper.GetUserTimesheetEntries(ownerUser);
+                DomainObjectBuilder.LoadTimeSheetEntries(userTimeSheetEntries, ownerUser);
 
                 var timesheetEntries =
                     userTimeSheetEntries.GetRangeOfTimesheetEntries(
@@ -97,18 +97,18 @@ namespace Timesheets.Tests.Domain.UnitTests
             {
                 var numberOfUserTimesheets = 5;
 
-                var fooUser = TestHelper.GetFoo();
-                var fooUserTimeSheetEntries = testHelper.GetUserTimesheetEntries(fooUser);
-                DomainObjectBuilder.LoadTimeSheetEntries(fooUserTimeSheetEntries, fooUser, numberOfTimesheets: numberOfUserTimesheets);
+                var ownerUser = TestHelper.GetOwnerUser();
+                var ownerUserTimeSheetEntries = testHelper.GetUserTimesheetEntries(ownerUser);
+                DomainObjectBuilder.LoadTimeSheetEntries(ownerUserTimeSheetEntries, ownerUser, numberOfTimesheets: numberOfUserTimesheets);
 
-                var barUser = TestHelper.GetBar();
-                var barUserTimeSheetEntries = testHelper.GetUserTimesheetEntries(barUser);
-                DomainObjectBuilder.LoadTimeSheetEntries(barUserTimeSheetEntries, barUser, numberOfTimesheets: numberOfUserTimesheets);
+                var user = TestHelper.GetUser(TestHelper.VALID_EMAIL_ADDRESS);
+                var userTimeSheetEntries = testHelper.GetUserTimesheetEntries(user);
+                DomainObjectBuilder.LoadTimeSheetEntries(userTimeSheetEntries, user, numberOfTimesheets: numberOfUserTimesheets);
 
                 Assert.Equal(numberOfUserTimesheets,
-                    fooUserTimeSheetEntries.GetLastMonthsTimesheetEntries().Count());
+                    ownerUserTimeSheetEntries.GetLastMonthsTimesheetEntries().Count());
                 Assert.Equal(numberOfUserTimesheets,
-                    barUserTimeSheetEntries.GetRangeOfTimesheetEntries(
+                    userTimeSheetEntries.GetRangeOfTimesheetEntries(
                         DateTime.Now.AddDays(0 - numberOfUserTimesheets), DateTime.Now).Count());
             }
         }

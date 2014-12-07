@@ -17,8 +17,8 @@ namespace Timesheets.Tests.Domain.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var fooUser = TestHelper.GetFoo();
-                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetFoo());
+                var ownerUser = TestHelper.GetOwnerUser();
+                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetOwnerUser());
 
                 Assert.Throws<RulesException<Project>>(
                     () =>
@@ -40,12 +40,12 @@ namespace Timesheets.Tests.Domain.UnitTests
         [Fact]
         public void Project_cannot_be_modified_by_unauthorised_user()
         {
-            var fooUser = TestHelper.GetFoo();
+            var ownerUser = TestHelper.GetOwnerUser();
 
             var unityContainer = InMemoryUnityContainer.GetInMemoryContainer();
             var projectService = unityContainer.Resolve<ProjectService>();
             var userProjectAdministration = unityContainer.Resolve<UserProjects>(
-                new ParameterOverride("user", fooUser),
+                new ParameterOverride("user", ownerUser),
                 new ParameterOverride("projectService", projectService));
 
             Assert.Throws<RulesException>(
@@ -58,7 +58,7 @@ namespace Timesheets.Tests.Domain.UnitTests
 
                         var tempUserProjectAdministration =
                             unityContainer.Resolve<UserProjects>(
-                                new ParameterOverride("user", TestHelper.GetBar()),
+                                new ParameterOverride("user", TestHelper.GetUser(TestHelper.VALID_EMAIL_ADDRESS)),
                                 new ParameterOverride("projectService", projectService));
 
                         tempUserProjectAdministration.UpdateProject(project);
@@ -76,8 +76,8 @@ namespace Timesheets.Tests.Domain.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var fooUser = TestHelper.GetFoo();
-                var userProjectAdministration = testHelper.GetUserProjects(fooUser);
+                var ownerUser = TestHelper.GetOwnerUser();
+                var userProjectAdministration = testHelper.GetUserProjects(ownerUser);
 
                 var project = userProjectAdministration.AddProject(
                     new Project(
@@ -85,19 +85,19 @@ namespace Timesheets.Tests.Domain.UnitTests
                         startDate: DateTime.Now,
                         endDate: DateTime.Now.AddDays(1)));
 
-                Assert.Equal(project.OwnerUserId, fooUser.Id);
+                Assert.Equal(project.OwnerUserId, ownerUser.Id);
             }
         }
 
         [Fact]
         public void Project_transfer_fails_when_user_is_not_owner()
         {
-            var fooUser = TestHelper.GetFoo();
+            var ownerUser = TestHelper.GetOwnerUser();
 
             var unityContainer = InMemoryUnityContainer.GetInMemoryContainer();
             var projectService = unityContainer.Resolve<ProjectService>();
             var userProjectAdministration = unityContainer.Resolve<UserProjects>(
-                new ParameterOverride("user", fooUser),
+                new ParameterOverride("user", ownerUser),
                 new ParameterOverride("projectService", projectService));
 
             Assert.Throws<RulesException<Project>>(
@@ -112,7 +112,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                                 endDate: DateTime.Now.AddDays(1)));
 
                         var tempUserProjectAdministration = unityContainer.Resolve<UserProjects>(
-                            new ParameterOverride("user", TestHelper.GetBar()),
+                            new ParameterOverride("user", TestHelper.GetUser(TestHelper.VALID_EMAIL_ADDRESS)),
                             new ParameterOverride("projectService", projectService));
 
                         tempUserProjectAdministration.TransferProjectOwnership(
@@ -131,8 +131,8 @@ namespace Timesheets.Tests.Domain.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var fooUser = TestHelper.GetFoo();
-                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetFoo());
+                var ownerUser = TestHelper.GetOwnerUser();
+                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetOwnerUser());
 
                 var project = userProjectAdministration.AddProject(
                     new Project(
@@ -153,8 +153,8 @@ namespace Timesheets.Tests.Domain.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var fooUser = TestHelper.GetFoo();
-                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetFoo());
+                var ownerUser = TestHelper.GetOwnerUser();
+                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetOwnerUser());
 
                 DomainObjectBuilder.LoadProjects(userProjectAdministration, Guid.NewGuid());
 
@@ -168,16 +168,15 @@ namespace Timesheets.Tests.Domain.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var fooUser = TestHelper.GetFoo();
-                var fooUserProjectAdministration = testHelper.GetUserProjects(TestHelper.GetFoo());
+                var ownerUser = TestHelper.GetOwnerUser();
+                var ownerUserProjectAdministration = testHelper.GetUserProjects(TestHelper.GetOwnerUser());
 
-                var barUser = TestHelper.GetBar();
-                var barUserProjectAdministration = testHelper.GetUserProjects(TestHelper.GetFoo());
+                var userProjectAdministration = testHelper.GetUserProjects(TestHelper.GetOwnerUser());
 
-                DomainObjectBuilder.LoadProjects(fooUserProjectAdministration, fooUser.Id);
-                DomainObjectBuilder.LoadProjects(barUserProjectAdministration, fooUser.Id);
+                DomainObjectBuilder.LoadProjects(ownerUserProjectAdministration, ownerUser.Id);
+                DomainObjectBuilder.LoadProjects(userProjectAdministration, ownerUser.Id);
 
-                var userProjects = barUserProjectAdministration.GetUserProjects();
+                var userProjects = userProjectAdministration.GetUserProjects();
                 Assert.Equal(2, userProjects.Count());
             }
         }

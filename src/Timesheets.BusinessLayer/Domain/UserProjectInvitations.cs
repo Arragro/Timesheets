@@ -58,6 +58,7 @@ namespace Timesheets.BusinessLayer.Domain
         {
             _securityRules.IsUserAuthorisedToModifyProjectData(projectInvitation.Project, User);
             _projectInvitationService.DeleteProjectInvitation(projectInvitation);
+            _projectInvitationService.SaveChanges();
         }
 
         public ProjectInvitation InviteUserToProject(

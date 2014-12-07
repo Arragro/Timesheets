@@ -20,7 +20,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                 {
                     using (var testHelper = new TestHelper())
                     {
-                        var user = TestHelper.GetFoo();
+                        var user = TestHelper.GetOwnerUser();
                         var project = new Project("Test 1", user.Id);
                         var projectContrbutor = new ProjectContributor(project, Guid.NewGuid());
                         var userProjectContributor = testHelper.GetUserProjectContributor(user);
@@ -46,12 +46,12 @@ namespace Timesheets.Tests.Domain.UnitTests
                 {
                     using (var testHelper = new TestHelper())
                     {
-                        var fooUser = TestHelper.GetFoo();
+                        var ownerUser = TestHelper.GetOwnerUser();
                         var result = DomainObjectBuilder.CreateAndGetProjectContributors(
-                            testHelper, fooUser, new[] { TestHelper.VALID_EMAIL_ADDRESS }).First();
+                            testHelper, ownerUser, new[] { TestHelper.VALID_EMAIL_ADDRESS }).First();
 
-                        var userProjectContributor = testHelper.GetUserProjectContributor(fooUser);
-                        var projectContributor = userProjectContributor.GetProjectContributor(result.Item1, fooUser.Id);
+                        var userProjectContributor = testHelper.GetUserProjectContributor(ownerUser);
+                        var projectContributor = userProjectContributor.GetProjectContributor(result.Item1, ownerUser.Id);
 
                         try
                         {
@@ -74,11 +74,11 @@ namespace Timesheets.Tests.Domain.UnitTests
                 {
                     using (var testHelper = new TestHelper())
                     {
-                        var fooUser = TestHelper.GetFoo();
+                        var ownerUser = TestHelper.GetOwnerUser();
                         var result = DomainObjectBuilder.CreateAndGetProjectContributors(
-                            testHelper, fooUser, new[] { TestHelper.VALID_EMAIL_ADDRESS }).First();
+                            testHelper, ownerUser, new[] { TestHelper.VALID_EMAIL_ADDRESS }).First();
 
-                        var userProjects = testHelper.GetUserProjects(fooUser);
+                        var userProjects = testHelper.GetUserProjects(ownerUser);
                         var project = userProjects.GetUserProjects().First();
                         var userProjectContributor = testHelper.GetUserProjectContributor(result.Item4);
 
@@ -100,10 +100,10 @@ namespace Timesheets.Tests.Domain.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var fooUser = TestHelper.GetFoo();
+                var ownerUser = TestHelper.GetOwnerUser();
                 var result = DomainObjectBuilder.CreateAndGetProjectContributors(
-                    testHelper, fooUser, new[] { TestHelper.VALID_EMAIL_ADDRESS }).First();
-                var userProjectContributor = testHelper.GetUserProjectContributor(fooUser);
+                    testHelper, ownerUser, new[] { TestHelper.VALID_EMAIL_ADDRESS }).First();
+                var userProjectContributor = testHelper.GetUserProjectContributor(ownerUser);
                 var barProjectContributor = result.Item3;
 
                 barProjectContributor = userProjectContributor.ChangeProjectContributorsRole(barProjectContributor, ContributorRole.Administrator);
@@ -125,10 +125,10 @@ namespace Timesheets.Tests.Domain.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var fooUser = TestHelper.GetFoo();
+                var ownerUser = TestHelper.GetOwnerUser();
                 var result = DomainObjectBuilder.CreateAndGetProjectContributors(
-                    testHelper, fooUser, new[] { TestHelper.VALID_EMAIL_ADDRESS }).First();
-                var userProjectContributor = testHelper.GetUserProjectContributor(fooUser);
+                    testHelper, ownerUser, new[] { TestHelper.VALID_EMAIL_ADDRESS }).First();
+                var userProjectContributor = testHelper.GetUserProjectContributor(ownerUser);
                 var barProjectContributor = result.Item3;
 
                 barProjectContributor = userProjectContributor.ChangeProjectContributorsRole(barProjectContributor, ContributorRole.Administrator);
@@ -146,9 +146,9 @@ namespace Timesheets.Tests.Domain.UnitTests
                     {
                         using (var testHelper = new TestHelper())
                         {
-                            var fooUser = TestHelper.GetFoo();
+                            var ownerUser = TestHelper.GetOwnerUser();
                             var result = DomainObjectBuilder.CreateAndGetProjectContributors(
-                                testHelper, fooUser, new[] { TestHelper.VALID_EMAIL_ADDRESS }).First();
+                                testHelper, ownerUser, new[] { TestHelper.VALID_EMAIL_ADDRESS }).First();
                             var userProjectContributor = testHelper.GetUserProjectContributor(result.Item4);
 
                             var barProjectContributor = result.Item3;

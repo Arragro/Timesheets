@@ -34,7 +34,7 @@ namespace Timesheets.Tests.Domain.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var user = TestHelper.GetFoo();
+                var user = TestHelper.GetOwnerUser();
                 var userProjectAdministration = testHelper.GetUserProjects(user);
                 userProjectAdministration.AddProject(new Project("Test", user.Id));
 
@@ -53,7 +53,7 @@ namespace Timesheets.Tests.Domain.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var user = TestHelper.GetFoo();
+                var user = TestHelper.GetOwnerUser();
                 var userProjectAdministration = testHelper.GetUserProjects(user);
                 userProjectAdministration.AddProject(new Project("Test", user.Id));
 
@@ -77,7 +77,7 @@ namespace Timesheets.Tests.Domain.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var user = TestHelper.GetFoo();
+                var user = TestHelper.GetOwnerUser();
                 var userProjectAdministration = testHelper.GetUserProjects(user);
                 userProjectAdministration.AddProject(new Project("Test 1", user.Id));
                 userProjectAdministration.AddProject(new Project("Test 2", user.Id));
@@ -105,7 +105,7 @@ namespace Timesheets.Tests.Domain.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var user = TestHelper.GetFoo();
+                var user = TestHelper.GetOwnerUser();
                 var userProjects = testHelper.GetUserProjects(user);
 
                 var userEmails = new[] { TestHelper.VALID_EMAIL_ADDRESS };
@@ -132,7 +132,7 @@ namespace Timesheets.Tests.Domain.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var user = TestHelper.GetFoo();
+                var user = TestHelper.GetOwnerUser();
                 var userProjectAdministration = testHelper.GetUserProjects(user);
 
                 var userEmails = new[] { TestHelper.VALID_EMAIL_ADDRESS };
@@ -156,10 +156,10 @@ namespace Timesheets.Tests.Domain.UnitTests
                 {
                     using (var testHelper = new TestHelper())
                     {
-                        var user = TestHelper.GetFoo();
+                        var user = TestHelper.GetOwnerUser();
                         var userProjects = testHelper.GetUserProjects(user);
                         var project = userProjects.AddProject(new Project("Test 1", user.Id));
-                        var invitee = TestHelper.GetBar();
+                        var invitee = TestHelper.GetUser(TestHelper.VALID_EMAIL_ADDRESS);
 
                         DomainObjectBuilder.AcceptRejectProjectInvitations(
                             testHelper, user, project, new[] { TestHelper.VALID_EMAIL_ADDRESS });
@@ -186,7 +186,7 @@ namespace Timesheets.Tests.Domain.UnitTests
                 {
                     using (var testHelper = new TestHelper())
                     {
-                        var user = TestHelper.GetFoo();
+                        var user = TestHelper.GetOwnerUser();
                         var userProjects = testHelper.GetUserProjects(user);
                         var project = userProjects.AddProject(new Project("Test 1", user.Id));
                         
@@ -218,17 +218,16 @@ namespace Timesheets.Tests.Domain.UnitTests
                 {
                     using (var testHelper = new TestHelper())
                     {
-                        var user = TestHelper.GetFoo();
+                        var user = TestHelper.GetOwnerUser();
                         var userProjects = testHelper.GetUserProjects(user);
                         var project = userProjects.AddProject(new Project("Test 1", user.Id));
-                        var invitee = TestHelper.GetBar();
 
-                        DomainObjectBuilder.AcceptRejectProjectInvitations(
-                            testHelper, user, project, new[] { TestHelper.VALID_EMAIL_ADDRESS });
+                        var result = DomainObjectBuilder.AcceptRejectProjectInvitations(
+                            testHelper, user, project, new[] { TestHelper.VALID_EMAIL_ADDRESS }).First();
 
                         try
                         {
-                            var invitationAdministration = testHelper.GetUserProjectInvitations(invitee);
+                            var invitationAdministration = testHelper.GetUserProjectInvitations(result.Item3);
                             invitationAdministration.InviteUserToProject(project, TestHelper.VALID_EMAIL_ADDRESS);
                         }
                         catch (RulesException ex)

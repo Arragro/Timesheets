@@ -14,12 +14,27 @@ namespace Timesheets.Tests
     {
         private IUnityContainer _unityContainer;
 
+        private static bool _firstTimeRun = true;
+        private static object _blocker = new object();
+
         public TestHelper(bool dropDatabase = false)
         {
 #if !INTEGRATION_TESTS
             _unityContainer = InMemoryUnityContainer.GetInMemoryContainer();
 #else
-            _unityContainer = EF6UnityContainer.GetEF6Container(dropDatabase);
+            if (_firstTimeRun)
+            {
+                lock(_blocker)
+                {
+                    if (_firstTimeRun)
+                    {
+                        _unityContainer = EF6UnityContainer.GetEF6Container(true);
+                        _firstTimeRun = false;
+                    }
+                }
+            }
+            else
+                _unityContainer = EF6UnityContainer.GetEF6Container(dropDatabase);
 #endif
         }
 
@@ -29,6 +44,17 @@ namespace Timesheets.Tests
         {
             const string valid_email_address = "email.is.good{0}@test.com";
             return string.Format(valid_email_address, number);
+        }
+
+        public static string[] GetEmailAddresses(int number, int startIndex)
+        {
+            var output = new string[number];
+            for (int i = 0; i < number; i++)
+            {
+                var num = i + startIndex;
+                output[i] = GetEmailAddress(num);
+            }
+            return output;
         }
 
         public ProjectService GetProjectService()
@@ -93,19 +119,15 @@ namespace Timesheets.Tests
             return user.Object;
         }
 
-        public static IUser<Guid> GetFoo()
+        public static IUser<Guid> GetOwnerUser()
         {
-            return GetUser(Guid.NewGuid(), "Foo");
+            return GetUser(Guid.NewGuid(), "Owner");
         }
 
-        public static IUser<Guid> GetBar()
+        public static IUser<Guid> GetUser(string emailAddress)
         {
-            return GetUser(Guid.NewGuid(), "Bar");
-        }
-
-        public static IUser<Guid> GetBoo()
-        {
-            return GetUser(Guid.NewGuid(), "Boo");
+            if (string.IsNullOrEmpty(emailAddress)) throw new ArgumentNullException("emailAddress");
+            return GetUser(Guid.NewGuid(), emailAddress);
         }
 
         protected virtual void Dispose(bool disposing)

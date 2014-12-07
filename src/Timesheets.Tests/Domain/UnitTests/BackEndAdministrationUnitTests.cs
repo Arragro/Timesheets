@@ -11,7 +11,7 @@ namespace Timesheets.Tests.Domain.UnitTests
         {
             using (var testHelper = new TestHelper())
             {
-                var user = TestHelper.GetFoo();
+                var user = TestHelper.GetOwnerUser();
                 var userProjects = testHelper.GetUserProjects(user);
                 var project = userProjects.AddProject(new Project("Test 1", user.Id));
 

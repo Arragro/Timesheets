@@ -73,7 +73,8 @@ namespace Timesheets.BusinessLayer.Services
         public IEnumerable<Project> GetUserProjects(Guid userId)
         {
             return Repository.All()
-                .Where(p => p.OwnerUserId == userId)
+                .Where(p => p.OwnerUserId == userId ||
+                            p.ProjectContributors.Any(x => x.UserId == userId))
                 .ToList();
         }
 

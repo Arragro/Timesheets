@@ -1,5 +1,6 @@
 ﻿using Arragro.Common.BusinessRules;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Timesheets.DataLayer.Models
@@ -21,16 +22,20 @@ namespace Timesheets.DataLayer.Models
         public bool RequiresApproval { get; private set; }
         public DateTime? StartDate { get; private set; }
         public DateTime? EndDate { get; private set; }
+        public int test { get; set; }
+
+        public ICollection<ProjectContributor> ProjectContributors { get; private set; }
 
         protected Project()
         {
+            ProjectContributors = new HashSet<ProjectContributor>();
         }
 
         public Project(
             string name, Guid ownerUserId, string code = null, string purchaseOrderNumber = null,
             decimal? budget = null, decimal? weeklContributorHoursLimit = null,
             bool requiresApproval = false, DateTime? startDate = null,
-            DateTime? endDate = null)
+            DateTime? endDate = null) : this()
         {
             Name = name;
             OwnerUserId = ownerUserId;
