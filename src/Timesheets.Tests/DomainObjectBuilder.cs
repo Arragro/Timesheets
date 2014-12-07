@@ -45,7 +45,7 @@ namespace Timesheets.Tests
             }
         }
 
-        private static IEnumerable<ProjectInvitation> LoadProjectInvitations(
+        public static IEnumerable<ProjectInvitation> LoadProjectInvitations(
             TestHelper testHelper,
             IUser<Guid> user,
             Project project,
@@ -87,12 +87,14 @@ namespace Timesheets.Tests
                 var invitee = TestHelper.GetBar();
                 invitee.UserName = emailAddress;
 
-                var userProjectInvitations = testHelper.GetUserProjectInvitations(invitee);
+                var inviteeProjectInvitations = testHelper.GetUserProjectInvitations(invitee);
                 ProjectContributor contributor = null;
                 if (accept)
-                    contributor = userProjectInvitations.AcceptInvitation(projectInvitation.InvitationCode);
+                    contributor = inviteeProjectInvitations.AcceptInvitation(projectInvitation.InvitationCode);
                 else
-                    userProjectInvitations.RejectInvitation(projectInvitation.InvitationCode);
+                    inviteeProjectInvitations.RejectInvitation(projectInvitation.InvitationCode);
+
+                var userProjectInvitations = testHelper.GetUserProjectInvitations(user);
                 projectInvitation = userProjectInvitations.GetProjectInvitations(project).First(x => x.InvitationCode == projectInvitation.InvitationCode);
 
                 output.Add(new Tuple<ProjectInvitation, ProjectContributor, IUser<Guid>>(projectInvitation, contributor, invitee));

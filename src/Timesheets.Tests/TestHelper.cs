@@ -25,6 +25,12 @@ namespace Timesheets.Tests
 
         public const string VALID_EMAIL_ADDRESS = "email.is.good@test.com";
 
+        public static string GetEmailAddress(int number)
+        {
+            const string valid_email_address = "email.is.good{0}@test.com";
+            return string.Format(valid_email_address, number);
+        }
+
         public ProjectService GetProjectService()
         {
             return _unityContainer.Resolve<ProjectService>();

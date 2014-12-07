@@ -50,11 +50,13 @@ namespace Timesheets.BusinessLayer.Domain
 
         public IEnumerable<ProjectInvitation> GetProjectInvitations(Project project)
         {
+            _securityRules.IsUserAuthorisedToReadProjectData(project, User);
             return _projectInvitationService.GetProjectInvitations(project);
         }
 
         public void DeleteProjectInvitation(ProjectInvitation projectInvitation)
         {
+            _securityRules.IsUserAuthorisedToModifyProjectData(projectInvitation.Project, User);
             _projectInvitationService.DeleteProjectInvitation(projectInvitation);
         }
 

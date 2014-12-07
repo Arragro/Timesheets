@@ -49,6 +49,30 @@ namespace Timesheets.Tests.Domain.UnitTests
         }
 
         [Fact]
+        public void UserProjectAdministration_Invite_User_to_Project_then_delete_invitation()
+        {
+            using (var testHelper = new TestHelper())
+            {
+                var user = TestHelper.GetFoo();
+                var userProjectAdministration = testHelper.GetUserProjects(user);
+                userProjectAdministration.AddProject(new Project("Test", user.Id));
+
+                var project = userProjectAdministration.GetUserProjects().First();
+
+                var invitationAdministration = testHelper.GetUserProjectInvitations(user);
+                var projectInvitation = invitationAdministration.InviteUserToProject(project, TestHelper.VALID_EMAIL_ADDRESS);
+
+                Assert.NotNull(projectInvitation);
+                Assert.NotEqual(default(Guid), projectInvitation.ProjectInvitationId);
+
+                invitationAdministration.DeleteProjectInvitation(projectInvitation);
+                var projectInvitations = invitationAdministration.GetProjectInvitations(project);
+
+                Assert.False(projectInvitations.Any());
+            }
+        }
+
+        [Fact]
         public void UserProjectAdministration_returns_Invitations_for_Project()
         {
             using (var testHelper = new TestHelper())
@@ -125,6 +149,68 @@ namespace Timesheets.Tests.Domain.UnitTests
         }
 
         [Fact]
+        public void User_security_cannot_read_project_invitations()
+        {
+            Assert.Throws<RulesException>(
+                () =>
+                {
+                    using (var testHelper = new TestHelper())
+                    {
+                        var user = TestHelper.GetFoo();
+                        var userProjects = testHelper.GetUserProjects(user);
+                        var project = userProjects.AddProject(new Project("Test 1", user.Id));
+                        var invitee = TestHelper.GetBar();
+
+                        DomainObjectBuilder.AcceptRejectProjectInvitations(
+                            testHelper, user, project, new[] { TestHelper.VALID_EMAIL_ADDRESS });
+
+                        try
+                        {
+                            var invitationAdministration = testHelper.GetUserProjectInvitations(invitee);
+                            invitationAdministration.GetProjectInvitations(project);
+                        }
+                        catch (RulesException ex)
+                        {
+                            Assert.Equal(ex.Errors[0].Message, SecurityRules.USER_IS_NOT_AUTHORISED_TO_READ);
+                            throw;
+                        }
+                    }
+                });
+        }
+
+        [Fact]
+        public void User_security_cannot_delete_project_invitations()
+        {
+            Assert.Throws<RulesException>(
+                () =>
+                {
+                    using (var testHelper = new TestHelper())
+                    {
+                        var user = TestHelper.GetFoo();
+                        var userProjects = testHelper.GetUserProjects(user);
+                        var project = userProjects.AddProject(new Project("Test 1", user.Id));
+                        
+                        var result = DomainObjectBuilder.AcceptRejectProjectInvitations(
+                            testHelper, user, project, new[] { TestHelper.VALID_EMAIL_ADDRESS }).First();
+
+                        var projectInviation = DomainObjectBuilder.LoadProjectInvitations(
+                            testHelper, user, project, new[] { TestHelper.GetEmailAddress(2) }).First();
+
+                        try
+                        {
+                            var invitationAdministration = testHelper.GetUserProjectInvitations(result.Item3);
+                            invitationAdministration.DeleteProjectInvitation(projectInviation);
+                        }
+                        catch (RulesException ex)
+                        {
+                            Assert.Equal(ex.Errors[0].Message, SecurityRules.USER_IS_NOT_AUTHORISED_TO_MODIFY);
+                            throw;
+                        }
+                    }
+                });
+        }
+
+        [Fact]
         public void User_security_cannot_invite_user()
         {
             Assert.Throws<RulesException>(
@@ -139,7 +225,7 @@ namespace Timesheets.Tests.Domain.UnitTests
 
                         DomainObjectBuilder.AcceptRejectProjectInvitations(
                             testHelper, user, project, new[] { TestHelper.VALID_EMAIL_ADDRESS });
-                            
+
                         try
                         {
                             var invitationAdministration = testHelper.GetUserProjectInvitations(invitee);
